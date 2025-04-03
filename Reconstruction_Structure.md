@@ -6,6 +6,11 @@ add a "neutron_direction" function in event, input the information in printtrack
 and the cos angle between two angles.    
 
 
+read_neutron_direction(self)->selectneutronevent
+
+find_coordinate->print_tracks->reorder_coordinate
+
+
 
     def selectneutronevent(self):
         trig = 0
