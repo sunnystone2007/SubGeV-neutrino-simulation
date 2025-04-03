@@ -1,4 +1,4 @@
-    def PrintTracks(self, start=0, stop=-1):
+    def neutron_reconstruction(self, start=0, stop=-1):
         #print(f"{self.tracks.size} trajectories stored", )
 
         #print(f"{'pdg':>8}{'name':>8}{'trkId':>6}{'parId':>6}{'acId':>6}{'KE':>10}{'selfDepo':>10}{'allDepo':>10}")
@@ -10,7 +10,7 @@
         numbers=self.select_the_right_track()
         for track in self.tracks[numbers]:
             pdg = track.GetPDGCode()
-            print("the particle is:",pdg)
+            #print("the particle is:",pdg)
             name = track.GetName()
             trkId = track.GetTrackId()
             parId = track.GetParentId()
@@ -26,7 +26,9 @@
                y = point.GetPosition().Y()
                z = point.GetPosition().Z()
                t = point.GetPosition().T()
-            print("the x,y,z,t coordinate of the track:",x,y,z,t)
+                
+            #print("the x,y,z,t coordinate of the track:",x,y,z,t)
+            
             #print("the 3 momentum are:",px,py,pz,"the energy is:",pE,"the mass is:",pM,)
             mass = mom.M()
             KE = mom.E() - mass
