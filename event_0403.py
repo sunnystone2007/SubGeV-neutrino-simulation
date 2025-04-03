@@ -62,7 +62,7 @@ class Event:
         self.ReadTracks()
         self.ReadEnergyDepo('SimEnergyDeposit')
         #self.PrintVertex
-       # self.PrintTracksEnergy()
+        #self.PrintTracksEnergy()
         #self.PrintTracksEnergy_ignoreneutron
         #self.selectneutronevent()
         #self.PrintTracks
