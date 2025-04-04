@@ -851,7 +851,9 @@ class Event:
         return [neutrontrkId, neutronKE]
     def cos_theta(self)
         simulated_direction=self.generate_vectors_and_simulated_direction()
-        real_direction=self.
+        real_direction=self.read_neutron_direction()
+        cos_between= np.dot(simulated_direction,real_direction)
+        print("the cos of two directions is:",cos_between)
 
    #here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
     def simulating_direction(self, start=0, stop=-1):
@@ -888,8 +890,6 @@ class Event:
         self.reorder_by_time(coordinate)
         print(coordinate)
 
-
-        import math
 
      def generate_vectors_and_simulated_direction(self):
     """
@@ -942,32 +942,6 @@ class Event:
 
 
         
-            
-            #print("the x,y,z,t coordinate of the track:",x,y,z,t)
-            #print("the 3 momentum are:",px,py,pz,"the energy is:",pE,"the mass is:",pM,)
-            mass = mom.M()
-            KE = mom.E() - mass
-            print("the kenitic energy is: ",KE)
-            p_square=(px**2+py**2+pz**2)**0.5
-            direction_vector=[]
-            direction_vector.append(px/p_square)
-            direction_vector.append(py/p_square)
-            direction_vector.append(pz/p_square)
-            if KE>=2:
-                print(direction_vector)
-            else:
-                print("direction undetermined")
-            ancestor = track.association['ancestor']
-            selfDepo = track.energy['depoTotal']
-            allDepo = self.GetEnergyDepoWithDesendents(trkId)
-            #print(f"{pdg:>8d}{name:>8s}{trkId:>6d}{parId:>6d}{ancestor:>6d}{KE:>10.2f}{selfDepo:>10.2f}{allDepo:>10.2f}")
-            # Take the last neutron and check its KE and capture time
-            if pdg == 2112:
-                neutrontrkId = trkId
-                neutronKE = KE
-
-        #print('-'*(8+8+6+6+6+10+10+10))
-        return [neutrontrkId, neutronKE]
     
     
     def selectneutronevent(self):
