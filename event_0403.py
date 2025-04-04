@@ -861,14 +861,8 @@ class Event:
             pdg = track.GetPDGCode()  # Get the PDG code of the particle
             track_energy = track.energy.get('depoTotal', 0)
             # Trace back to the parent particle until we find a neutron (PDG code 2112)
-            pdg, track = self.loopover(pdg, track)
             ParentId = track.GetParentId()
-            while pdg == 2112 and ParentId != -1:
-                track = self.tracks[ParentId]
-                pdg = track.GetPDGCode()
-                pdg, track = self.loopover(pdg, track)
-                ParentId = track.GetParentId()
-            if pdg == 2112 and ParentId == -1 and track_energy>0.5 and pdg_original!=2112:
+            if pdg == 2112 and ParentId == -1 and pdg_original!=2112:
                 trig+=1
         if trig==1:
             print("this",self.currentEntry,"th event has one neutron neutrino interaction, it is a good event")
