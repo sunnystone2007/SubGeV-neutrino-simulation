@@ -856,6 +856,13 @@ class Event:
         
         cos_between= np.dot(simulated_direction,real_direction)
         print("the cos of two directions is:",cos_between)
+        return cos_between
+    
+    
+    def fill_neutron_direction_cos(event):
+        value=self.cos_theta()
+        return value
+
 
    #here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
     def simulating_direction(self, start=0, stop=-1):
