@@ -1,6 +1,6 @@
 import ROOT
 from ROOT import TH1F, TFile
-from event_neutron import Event  # or from your module if renamed
+from event_firstten import Event  # or from your module if renamed
 import sys
 
 def fill_neutron_direction_cos(event):
