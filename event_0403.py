@@ -778,7 +778,7 @@ class Event:
 
         #print(f"{point.GetProcess()}, {point.GetSubprocess()}, {x}, {y}, {z}, {t}")
         return t # last point is capture time
-    def reorder_by_time(coordinates):
+    def reorder_by_time(self,coordinates):
         """
         Reorders a list of coordinate sets based on the time (t) component.
         Each coordinate is expected to be a list or tuple in the form [x, y, z, t].
@@ -821,23 +821,23 @@ class Event:
                y = point.GetPosition().Y()
                z = point.GetPosition().Z()
                t = point.GetPosition().T()
-               coordinate.append([x, y, z, t])
-            self.reorder_by_time(coordinate)
+            coordinate.append([x, y, z, t])
+        
             
             #print("the x,y,z,t coordinate of the track:",x,y,z,t)
             #print("the 3 momentum are:",px,py,pz,"the energy is:",pE,"the mass is:",pM,)
             mass = mom.M()
             KE = mom.E() - mass
-            print("the kenitic energy is: ",KE)
+            #print("the kenitic energy is: ",KE)
             p_square=(px**2+py**2+pz**2)**0.5
             direction_vector=[]
             direction_vector.append(px/p_square)
             direction_vector.append(py/p_square)
             direction_vector.append(pz/p_square)
-            if KE>=2:
-                print(direction_vector)
-            else:
-                print("direction undetermined")
+            #if KE>=2:
+            #    print(direction_vector)
+            #else:
+            #    print("direction undetermined")
             ancestor = track.association['ancestor']
             selfDepo = track.energy['depoTotal']
             allDepo = self.GetEnergyDepoWithDesendents(trkId)
@@ -846,12 +846,13 @@ class Event:
             if pdg == 2112:
                 neutrontrkId = trkId
                 neutronKE = KE
-
+        
         #print('-'*(8+8+6+6+6+10+10+10))
         return [neutrontrkId, neutronKE]
-    def cos_theta(self)
+    def cos_theta(self):
         simulated_direction=self.generate_vectors_and_simulated_direction()
         real_direction=self.read_neutron_direction()
+        
         cos_between= np.dot(simulated_direction,real_direction)
         print("the cos of two directions is:",cos_between)
 
@@ -862,7 +863,7 @@ class Event:
         #print(f"{'pdg':>8}{'name':>8}{'trkId':>6}{'parId':>6}{'acId':>6}{'KE':>10}{'selfDepo':>10}{'allDepo':>10}")
         #print(f"{'':>8}{'':>8}{'':>6}{'':>6}{'':>6}{'[MeV]':>10}{'[MeV]':>10}{'[MeV]':>10}")
         #print('-'*(8+8+6+6+6+10+10+10))
-
+        coordinate=[]
         neutrontrkId = -1
         neutronKE = -1
         numbers=self.select_the_right_track()
@@ -880,64 +881,56 @@ class Event:
             pz = track.GetInitialMomentum().Z()
             pE = track.GetInitialMomentum().E()
             pM = track.GetInitialMomentum().M()
-            coordinate=[]
+            
             for point in track.Points:
                x = point.GetPosition().X()
                y = point.GetPosition().Y()
                z = point.GetPosition().Z()
                t = point.GetPosition().T()
-            coordinate.append([x, y, z, t])
-        self.reorder_by_time(coordinate)
-        print(coordinate)
+            coordinate.append([0.0,x, y, z, t])
+        if not coordinate:
+            coordinate=[[0.0,0.0,0.0,0.0,0.0]]
+        coordinate=self.reorder_by_time(coordinate)
+        
+        return coordinate
 
 
-     def generate_vectors_and_simulated_direction(self):
-    """
-    Retrieves the data from self.get_direction(), which should return a list of tuples/lists
-    in the format (particle_type, x, y, z, t). This method then:
-      1. Finds the first point (i.e. the point with the smallest time value).
-      2. Computes the vector from each point to the first point and stores these in self.make_vector.
-      3. Sums all these vectors and normalizes the result to obtain a unit vector stored in self.simulated_direction.
-    
-    Returns:
-      make_vector (list): A list of 3D vectors (tuples) from each point to the first point.
-      simulated_direction (tuple): The unit vector (tuple) corresponding to the normalized sum of all vectors.
-    """
-    # Get the data from self.get_direction()
-          data = self.simulating_direction()
-          if not data:
+     
+    def generate_vectors_and_simulated_direction(self):
+        data=[]
+        data = self.simulating_direction()
+        if not data:
              self.make_vector = []
-             self.simulated_direction = (0.0, 0.0, 0.0)
+             self.simulated_direction = (0.0, 0.0, 0.0,0.0,0.0)
              return self.make_vector, self.simulated_direction
-
-    # Find the first point based on the smallest time (t)
-          first_point = min(data, key=lambda pt: pt[4])
-          first_x, first_y, first_z = first_point[1], first_point[2], first_point[3]
+        # Find the first point based on the smallest time (t)
+        first_point = min(data, key=lambda pt: pt[4])
+        first_x, first_y, first_z = first_point[1], first_point[2], first_point[3]
     
-    # Generate the vector from each point to the first point
-          make_vector = []
-          for pt in data:
-        # Vector from current point to the first point:
-                 vector = (first_x - pt[1], first_y - pt[2], first_z - pt[3])
-                 make_vector.append(vector)
+        # Generate the vector from each point to the first point
+        make_vector = []
+        for pt in data:
+                # Vector from current point to the first point:
+            vector = (first_x - pt[1], first_y - pt[2], first_z - pt[3])
+            make_vector.append(vector)
     
-    # Sum all the vectors component-wise
-          sum_vector = [sum(v[i] for v in make_vector) for i in range(3)]
+        # Sum all the vectors component-wise
+        sum_vector = [sum(v[i] for v in make_vector) for i in range(3)]
     
-    # Compute the Euclidean norm of the sum vector
-          norm = math.sqrt(sum(sum_component**2 for sum_component in sum_vector))
+        # Compute the Euclidean norm of the sum vector
+        norm = math.sqrt(sum(sum_component**2 for sum_component in sum_vector))
     
-    # Normalize the sum vector to create a unit vector
-          if norm == 0:
-              simulated_direction = (0.0, 0.0, 0.0)
-          else:
-               simulated_direction = tuple(sum_component / norm for sum_component in sum_vector)
+        # Normalize the sum vector to create a unit vector
+        if norm == 0:
+            simulated_direction = (0.0, 0.0, 0.0)
+        else:
+            simulated_direction = tuple(sum_component / norm for sum_component in sum_vector)
     
     # Store results in instance variables (optional)
-          self.make_vector = make_vector
-          self.simulated_direction = simulated_direction
+        self.make_vector = make_vector
+        self.simulated_direction = simulated_direction
     
-      return simulated_direction
+        return simulated_direction
 
 
 
@@ -968,6 +961,7 @@ class Event:
         trig=self.selectneutronevent()
         if trig==0:
             print("this event does not have a neutron neutrino interaction")
+            direction_vector=[0.0,0.0,0.0]
         else:
             print("this event has neutroon neutrino interaction")
             i=0
@@ -1114,3 +1108,4 @@ if __name__ == "__main__":
     #event.PrintVertex()
     #event.PrintTracks(0,8)
     # event.PrintTrack(1)
+
