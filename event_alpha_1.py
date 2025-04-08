@@ -864,8 +864,8 @@ class Event:
         return value
 
 
-   #here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
-    def simulating_direction(self, start=0, stop=-1):
+   #here we face a problem, in every track there are multiple points, in vertex_direction we just pick up a random one for simulation
+    def vertex_direction(self, start=0, stop=-1):
         #print(f"{self.tracks.size} trajectories stored", )
 
         #print(f"{'pdg':>8}{'name':>8}{'trkId':>6}{'parId':>6}{'acId':>6}{'KE':>10}{'selfDepo':>10}{'allDepo':>10}")
