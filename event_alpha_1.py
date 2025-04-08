@@ -850,7 +850,7 @@ class Event:
         #print('-'*(8+8+6+6+6+10+10+10))
         return [neutrontrkId, neutronKE]
     def cos_theta(self):
-        simulated_direction=self.generate_vectors_and_simulated_direction()
+        reconstructed_direction=self.reconstructed_direction()
         real_direction=self.read_neutron_direction()
         print(simulated_direction, real_direction)
         
@@ -902,43 +902,41 @@ class Event:
         
         return coordinate
 
-
-     
-    def generate_vectors_and_simulated_direction(self):
-        data=[]
+    def Reconstructed_direction(self):
         data = self.simulating_direction()
         if not data:
-             self.make_vector = []
-             self.simulated_direction = (0.0, 0.0, 0.0,0.0,0.0)
-             return self.make_vector, self.simulated_direction
-        # Find the first point based on the smallest time (t)
-        first_point = min(data, key=lambda pt: pt[4])
-        first_x, first_y, first_z = first_point[1], first_point[2], first_point[3]
-    
-        # Generate the vector from each point to the first point
+            self.make_vector = []
+            self.simulated_direction = (0.0, 0.0, 0.0,0.0,0.0)
+            return self.simulated_direction
+
+        # Generate the vector from each point to the origin (0.0, 0.0, 0.0)
         make_vector = []
         for pt in data:
-                # Vector from current point to the first point:
-            vector = (first_x - pt[1], first_y - pt[2], first_z - pt[3])
+            # Assuming pt[1], pt[2], pt[3] are the x, y, z coordinates:
+            vector = (-pt[1], -pt[2], -pt[3])
             make_vector.append(vector)
-    
-        # Sum all the vectors component-wise
+
+            # Sum all the vectors component-wise
         sum_vector = [sum(v[i] for v in make_vector) for i in range(3)]
-    
+
         # Compute the Euclidean norm of the sum vector
+        norm = math.sqrt(sum_component**2 for sum_component in sum_vector)
+        # Alternatively:
         norm = math.sqrt(sum(sum_component**2 for sum_component in sum_vector))
-    
-        # Normalize the sum vector to create a unit vector
+
+        # Normalize the sum vector to create a unit vector for the simulated direction
         if norm == 0:
             simulated_direction = (0.0, 0.0, 0.0)
         else:
             simulated_direction = tuple(sum_component / norm for sum_component in sum_vector)
-    
-    # Store results in instance variables (optional)
+
+        # Store results in instance variables (optional)
         self.make_vector = make_vector
         self.simulated_direction = simulated_direction
+
+    return simulated_direction
+
     
-        return simulated_direction
 
 
 
