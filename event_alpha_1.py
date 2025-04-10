@@ -1093,6 +1093,23 @@ class Event:
     #-----------------------
     def GetFileName(self):
         return self.simTree.GetFile().GetName()
+        
+    def GetDepoInformation(self):
+        """
+        Returns a list of track lengths (in centimeters) for all deposits.
+        Assumes that mm2cm is defined (e.g., mm2cm = 0.1).
+        """
+        track_lengths = []
+        for i, depo in enumerate(self.depos):
+            # Get the track id from the deposit (assuming depo.Contrib is a list)
+            trkId = depo.Contrib[0]
+            # Get energy deposit (if needed for other calculations)
+            edep = depo.GetEnergyDeposit()
+            # Multiply by the conversion factor: e.g. mm2cm = 0.1 converts mm to cm
+            trkLength = depo.GetTrackLength() * mm2cm
+            track_lengths.append(trkLength)
+        return track_lengths
+
 # ------------------------
 if __name__ == "__main__":
     event = Event(sys.argv[1])
