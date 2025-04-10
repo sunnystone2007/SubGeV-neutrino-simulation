@@ -357,11 +357,11 @@ class Event:
         posx = self.vertex.GetPosition().X()
         posy = self.vertex.GetPosition().Y()
         posz = self.vertex.GetPosition().Z()
-        #print(f"vertex @: ({posx}, {posy}, {posz}) [mm]")
+        print(f"vertex @: ({posx}, {posy}, {posz}) [mm]")
         #print(f"reaction: {self.vertex.GetReaction()}")
-        # print(f"interaction #: {self.vertex.GetInteractionNumber()}")
+        print(f"interaction #: {self.vertex.GetInteractionNumber()}")
 
-        # print(f"{self.vertex.Particles.size()} particles at the vertex", )
+        print(f"{self.vertex.Particles.size()} particles at the vertex", )
         #print(f'{"pdg":>8}{"name":>8}{"trkId":>6}{"mass":>10}{"KE":>10}')
         #print(f'{"":>8}{"":>8}{"":>6}{"[MeV]":>10}{"[MeV]":>10}')
         #print('-'*(8+8+6+10+10))
@@ -373,14 +373,14 @@ class Event:
             if trkId < 0: continue
             pdg = particle.GetPDGCode()
             name = particle.GetName()
-            mom_direction=particle.GetMomentum.direction()
-            print("this is momentum direction:",mom_direction)
+            #mom_direction=particle.GetMomentum.direction()
+            #print("this is momentum direction:",mom_direction)
             mom = particle.GetMomentum()
-            print("this is momentum direction:",mom)
+            #print("this is momentum direction:",mom)
             mass = mom.M()
             KE = mom.E() - mass
-        #    print(f'{pdg:>8d}{name:>8s}{trkId:>6d}{mass:>10.2f}{KE:>10.2f}')
-        #print('-'*(8+8+6+10+10))
+        #print(f'{pdg:>8d}{name:>8s}{trkId:>6d}{mass:>10.2f}{KE:>10.2f}')
+        print('-'*(8+8+6+10+10))
 
         #print(f'{self.info}')
 
@@ -850,22 +850,15 @@ class Event:
         #print('-'*(8+8+6+6+6+10+10+10))
         return [neutrontrkId, neutronKE]
     def cos_theta(self):
-        reconstructed_direction=self.reconstructed_direction()
+        simulated_direction=self.generate_vectors_and_simulated_direction()
         real_direction=self.read_neutron_direction()
         print(simulated_direction, real_direction)
         
         cos_between= np.dot(simulated_direction,real_direction)
         print("the cos of two directions is:",cos_between)
-        return cos_between
-    
-    
-    def fill_neutron_direction_cos(event):
-        value=self.cos_theta()
-        return value
 
-
-   #here we face a problem, in every track there are multiple points, in vertex_direction we just pick up a random one for simulation
-    def vertex_direction(self, start=0, stop=-1):
+   #here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
+    def simulating_direction(self, start=0, stop=-1):
         #print(f"{self.tracks.size} trajectories stored", )
 
         #print(f"{'pdg':>8}{'name':>8}{'trkId':>6}{'parId':>6}{'acId':>6}{'KE':>10}{'selfDepo':>10}{'allDepo':>10}")
@@ -902,41 +895,43 @@ class Event:
         
         return coordinate
 
-    def Reconstructed_direction(self):
+
+     
+    def generate_vectors_and_simulated_direction(self):
+        data=[]
         data = self.simulating_direction()
         if not data:
-            self.make_vector = []
-            self.simulated_direction = (0.0, 0.0, 0.0,0.0,0.0)
-            return self.simulated_direction
-
-        # Generate the vector from each point to the origin (0.0, 0.0, 0.0)
+             self.make_vector = []
+             self.simulated_direction = (0.0, 0.0, 0.0,0.0,0.0)
+             return self.make_vector, self.simulated_direction
+        # Find the first point based on the smallest time (t)
+        first_point = min(data, key=lambda pt: pt[4])
+        first_x, first_y, first_z = first_point[1], first_point[2], first_point[3]
+    
+        # Generate the vector from each point to the first point
         make_vector = []
         for pt in data:
-            # Assuming pt[1], pt[2], pt[3] are the x, y, z coordinates:
-            vector = (-pt[1], -pt[2], -pt[3])
+                # Vector from current point to the first point:
+            vector = (first_x - pt[1], first_y - pt[2], first_z - pt[3])
             make_vector.append(vector)
-
-            # Sum all the vectors component-wise
+    
+        # Sum all the vectors component-wise
         sum_vector = [sum(v[i] for v in make_vector) for i in range(3)]
-
+    
         # Compute the Euclidean norm of the sum vector
-        norm = math.sqrt(sum_component**2 for sum_component in sum_vector)
-        # Alternatively:
         norm = math.sqrt(sum(sum_component**2 for sum_component in sum_vector))
-
-        # Normalize the sum vector to create a unit vector for the simulated direction
+    
+        # Normalize the sum vector to create a unit vector
         if norm == 0:
             simulated_direction = (0.0, 0.0, 0.0)
         else:
             simulated_direction = tuple(sum_component / norm for sum_component in sum_vector)
-
-        # Store results in instance variables (optional)
+    
+    # Store results in instance variables (optional)
         self.make_vector = make_vector
         self.simulated_direction = simulated_direction
-
-    return simulated_direction
-
     
+        return simulated_direction
 
 
 
@@ -1113,3 +1108,5 @@ if __name__ == "__main__":
     #event.PrintVertex()
     #event.PrintTracks(0,8)
     # event.PrintTrack(1)
+
+
