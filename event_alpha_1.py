@@ -1100,6 +1100,7 @@ class Event:
         Assumes that mm2cm is defined (e.g., mm2cm = 0.1).
         """
         track_lengths = []
+        mm2cm=0.1
         for i, depo in enumerate(self.depos):
             # Get the track id from the deposit (assuming depo.Contrib is a list)
             trkId = depo.Contrib[0]
