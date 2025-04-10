@@ -804,7 +804,7 @@ class Event:
         numbers=self.select_the_right_track()
         for track in self.tracks[numbers]:
             pdg = track.GetPDGCode()
-            print("the particle is:",pdg)
+            #print("the particle is:",pdg)
             name = track.GetName()
             trkId = track.GetTrackId()
             parId = track.GetParentId()
@@ -870,7 +870,7 @@ class Event:
         numbers=self.select_the_right_track()
         for track in self.tracks[numbers]:
             pdg = track.GetPDGCode()
-            print("the particle is:",pdg)
+            #print("the particle is:",pdg)
             
             name = track.GetName()
             trkId = track.GetTrackId()
