@@ -873,7 +873,7 @@ class Event:
                     if di < 0 or di >= len(self.event.depos):
                         continue  # 防止越界
 
-                    depo = self.event.depos[di]
+                    depo = self.depos[di]
                     x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2m
                     y = (depo.GetStart().Y() + depo.GetStop().Y()) / 2 * mm2m
                     z = (depo.GetStart().Z() + depo.GetStop().Z()) / 2 * mm2m
