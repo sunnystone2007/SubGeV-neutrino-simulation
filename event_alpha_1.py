@@ -856,7 +856,7 @@ class Event:
     def reconstructing_direction(self, start=0, stop=-1):
         coordinate = []
         trig = self.selectneutronevent()
-
+        mm2cm=0.1
         if trig == 1:
             
             for i, track in enumerate(self.tracks):
@@ -871,9 +871,9 @@ class Event:
                             continue  # 防止越界
 
                         depo = self.depos[di]
-                        x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2m
-                        y = (depo.GetStart().Y() + depo.GetStop().Y()) / 2 * mm2m
-                        z = (depo.GetStart().Z() + depo.GetStop().Z()) / 2 * mm2m
+                        x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2cm
+                        y = (depo.GetStart().Y() + depo.GetStop().Y()) / 2 * mm2cm
+                        z = (depo.GetStart().Z() + depo.GetStop().Z()) / 2 * mm2cm
                         t = (depo.GetStart().T() + depo.GetStop().T()) / 2  # ns
                         edep = depo.GetEnergyDeposit()  # MeV
                         l = depo.GetTrackLength() * mm2cm
