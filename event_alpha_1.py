@@ -844,7 +844,9 @@ class Event:
         #print('-'*(8+8+6+6+6+10+10+10))
         return [neutrontrkId, neutronKE]
     def cos_theta(self):
-        
+        trig=selectneutronevent(self)
+        if trig!=1:
+            return
         reconstructed_direction=self.reconstructed_direction()
         true_direction=self.read_neutron_direction()
         print(reconstructed_direction, true_direction)
