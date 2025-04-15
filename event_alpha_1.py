@@ -947,6 +947,7 @@ class Event:
         trig=self.selectneutronevent()
         if trig!=0:
             print("this event does not have one neutron neutrino interaction")
+            return
         else:
             print("this event has neutron neutrino interaction")
             i=0
