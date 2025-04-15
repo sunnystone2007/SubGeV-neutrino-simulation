@@ -970,7 +970,7 @@ class Event:
             pE = track.GetInitialMomentum().E()
             pM = track.GetInitialMomentum().M()
             p_square = (px ** 2 + py ** 2 + pz ** 2) ** 0.5
-            if p_square=0.0:
+            if p_square==0.0:
                 direction_vector = np.array([0.577, 0.577, 0.577])
             else:
                 direction_vector.append(px / p_square)
