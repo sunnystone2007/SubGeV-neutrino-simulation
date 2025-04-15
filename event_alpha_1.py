@@ -882,7 +882,7 @@ class Event:
 
                         if edep >= 0.5:
                             coordinate.append([0.0, x, y, z, t])
-        print(coordinate)
+        #print(coordinate)
         return coordinate
 
     def reconstructed_direction(self):
@@ -953,10 +953,11 @@ class Event:
             track = self.tracks[i]
             parId = track.GetParentId()
             pdg_original = track.GetPDGCode()
-            while parId !=-1 or pdg_original!=2112:
+            while parId !=-1 or pdg_original! = 2112:
                 i+=1
                 track=self.tracks[i]
                 parId = track.GetParentId()
+                pdg_original=track.GetPDGCode()
         
             px = track.GetInitialMomentum().X()
             py = track.GetInitialMomentum().Y()
