@@ -970,11 +970,13 @@ class Event:
             pE = track.GetInitialMomentum().E()
             pM = track.GetInitialMomentum().M()
             p_square = (px ** 2 + py ** 2 + pz ** 2) ** 0.5
-            
-            direction_vector.append(px / p_square)
-            direction_vector.append(py / p_square)
-            direction_vector.append(pz / p_square)
-            direction_vector = np.array(direction_vector)
+            if p_square=0.0:
+                direction_vector = np.array([0.577, 0.577, 0.577])
+            else:
+                direction_vector.append(px / p_square)
+                direction_vector.append(py / p_square)
+                direction_vector.append(pz / p_square)
+                direction_vector = np.array(direction_vector)
         #print("the direction of the neutron:",direction_vector) 
         return direction_vector
 
