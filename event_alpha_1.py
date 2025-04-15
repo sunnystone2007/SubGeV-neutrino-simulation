@@ -847,11 +847,11 @@ class Event:
         trig=self.selectneutronevent()
         if trig!=1:
             return
-        reconstructed_direction=self.reconstructed_direction()
+        reconstructed_directions=self.reconstructed_direction()
         true_direction=self.read_neutron_direction()
-        print(reconstructed_direction, true_direction)
+        print(reconstructed_directions, true_direction)
         
-        cos_between= np.dot(reconstructed_direction,true_direction)
+        cos_between= np.dot(reconstructed_directions,true_direction)
         print("the cos of two directions is:",cos_between)
 
    #here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
