@@ -953,7 +953,7 @@ class Event:
             track = self.tracks[i]
             parId = track.GetParentId()
             pdg_original = track.GetPDGCode()
-            while parId !=-1 or pdg_original! = 2112:
+            while parId !=-1 or pdg_original != 2112:
                 i+=1
                 track=self.tracks[i]
                 parId = track.GetParentId()
