@@ -870,7 +870,7 @@ class Event:
 
                 depoList = track.association['depoList']
                 for di in depoList:
-                    if di < 0 or di >= len(self.event.depos):
+                    if di < 0 or di >= len(self.depos):
                         continue  # 防止越界
 
                     depo = self.depos[di]
