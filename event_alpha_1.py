@@ -903,7 +903,7 @@ class Event:
         sum_vector = [sum(v[i] for v in make_vector) for i in range(3)]
 
     # Compute the Euclidean norm of the sum vector
-        norm = math.sqrt(sum_component**2 for sum_component in sum_vector)
+        norm = math.sqrt(sum(sum_component**2 for sum_component in sum_vector))
     # Alternatively:
         norm = math.sqrt(sum(sum_component**2 for sum_component in sum_vector))
 
