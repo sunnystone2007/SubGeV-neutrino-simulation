@@ -907,9 +907,9 @@ class Event:
 
     # Normalize the sum vector to create a unit vector for the simulated direction
         if norm == 0:
-            reconstructed_direction = (0.0, 0.0, 0.0)
+            reconstructed_direction = np.zeros(3)
         else:
-            reconstructed_direction = tuple(sum_component / norm for sum_component in sum_vector)
+            reconstructed_direction = np.array(sum_vector) / norm
 
     # Store results in instance variables (optional)
         self.make_vector = make_vector
@@ -966,7 +966,8 @@ class Event:
             direction_vector.append(px / p_square)
             direction_vector.append(py / p_square)
             direction_vector.append(pz / p_square)
-            print("the direction of the neutron:",direction_vector) 
+            direction_vector = np.array(direction_vector)
+        #print("the direction of the neutron:",direction_vector) 
         return direction_vector
 
 
