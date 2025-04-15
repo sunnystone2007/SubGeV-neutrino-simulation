@@ -945,7 +945,7 @@ class Event:
     def read_neutron_direction(self):
         direction_vector=[]
         trig=self.selectneutronevent()
-        if trig!=0:
+        if trig!=1:
             print("this event does not have one neutron neutrino interaction")
             return
         else:
