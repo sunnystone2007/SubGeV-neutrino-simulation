@@ -850,6 +850,7 @@ class Event:
         #print('-'*(8+8+6+6+6+10+10+10))
         return [neutrontrkId, neutronKE]
     def cos_theta(self):
+        
         reconstructed_direction=self.reconstructed_direction()
         true_direction=self.read_neutron_direction()
         print(reconstructed_direction, true_direction)
@@ -859,41 +860,32 @@ class Event:
 
    #here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
     def reconstructing_direction(self, start=0, stop=-1):
-        #print(f"{self.tracks.size} trajectories stored", )
+        coordinate = []
+        trig = self.selectneutronevent()
 
-        #print(f"{'pdg':>8}{'name':>8}{'trkId':>6}{'parId':>6}{'acId':>6}{'KE':>10}{'selfDepo':>10}{'allDepo':>10}")
-        #print(f"{'':>8}{'':>8}{'':>6}{'':>6}{'':>6}{'[MeV]':>10}{'[MeV]':>10}{'[MeV]':>10}")
-        #print('-'*(8+8+6+6+6+10+10+10))
-        coordinate=[]
-        neutrontrkId = -1
-        neutronKE = -1
-        numbers=self.select_the_right_track()
-        for track in self.tracks[numbers]:
-            pdg = track.GetPDGCode()
-            #print("the particle is:",pdg)
-            
-            name = track.GetName()
-            trkId = track.GetTrackId()
-            parId = track.GetParentId()
-            mom = track.GetInitialMomentum()
-            # print("the momentum is :",mom)
-            px = track.GetInitialMomentum().X()
-            py = track.GetInitialMomentum().Y()
-            pz = track.GetInitialMomentum().Z()
-            pE = track.GetInitialMomentum().E()
-            pM = track.GetInitialMomentum().M()
-            
-            for point in track.Points:
-               x = point.GetPosition().X()
-               y = point.GetPosition().Y()
-               z = point.GetPosition().Z()
-               t = point.GetPosition().T()
-            coordinate.append([0.0,x, y, z, t])
-        if not coordinate:
-            coordinate=[[0.0,0.0,0.0,0.0,0.0]]
-        coordinate=self.reorder_by_time(coordinate)
-        
+        if trig == 1:
+            for i, track in enumerate(self.event.tracks):
+                if not hasattr(track, 'association') or 'depoList' not in track.association:
+                    continue  # skip invalid track
+
+                depoList = track.association['depoList']
+                for di in depoList:
+                    if di < 0 or di >= len(self.event.depos):
+                        continue  # 防止越界
+
+                    depo = self.event.depos[di]
+                    x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2m
+                    y = (depo.GetStart().Y() + depo.GetStop().Y()) / 2 * mm2m
+                    z = (depo.GetStart().Z() + depo.GetStop().Z()) / 2 * mm2m
+                    t = (depo.GetStart().T() + depo.GetStop().T()) / 2  # ns
+                    edep = depo.GetEnergyDeposit()  # MeV
+                    l = depo.GetTrackLength() * mm2cm
+
+                    if edep >= 0.5:
+                        coordinate.append([0.0, x, y, z, t])
+
         return coordinate
+
     def reconstructed_direction(self):
         data = self.reconstructing_direction()
         if not data:
@@ -953,15 +945,15 @@ class Event:
     def read_neutron_direction(self):
         direction_vector=[]
         trig=self.selectneutronevent()
-        if trig==0:
-            print("this event does not have a neutron neutrino interaction")
-            direction_vector=[0.0,0.0,0.0]
+        if trig!=0:
+            print("this event does not have one neutron neutrino interaction")
         else:
-            print("this event has neutroon neutrino interaction")
+            print("this event has neutron neutrino interaction")
             i=0
             track = self.tracks[i]
             parId = track.GetParentId()
-            while parId !=-1:
+            pdg_original = track.GetPDGCode()
+            while parId !=-1 or pdg_original!=2112:
                 i+=1
                 track=self.tracks[i]
                 parId = track.GetParentId()
