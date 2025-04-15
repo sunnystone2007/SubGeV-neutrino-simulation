@@ -860,14 +860,22 @@ class Event:
         trig = self.selectneutronevent()
         mm2cm=0.1
         if trig == 1:
-            
-            for i, track in enumerate(self.tracks):
-                
-                if not hasattr(track, 'association') or 'depoList' not in track.association:
-                    continue  # skip invalid track
-                switch=self.PrintTracksEnergy()
-                if switch==1:
-                    depoList = track.association['depoList']
+            for i in range(self.tracks.size):
+                track_origin = self.tracks[i]
+                track= self.tracks[i]
+                pdg_original = track.GetPDGCode()
+                pdg = track.GetPDGCode()  # Get the PDG code of the particle
+                track_energy = track.energy.get('depoTotal', 0)
+                # Trace back to the parent particle until we find a neutron (PDG code 2112)
+                pdg, track = self.loopover(pdg, track)
+                ParentId = track.GetParentId()
+                while pdg == 2112 and ParentId != -1:
+                    track = self.tracks[ParentId]
+                    pdg = track.GetPDGCode()
+                    pdg, track = self.loopover(pdg, track)
+                    ParentId = track.GetParentId()
+                if pdg == 2112 and ParentId == -1 :
+                    depoList = track_origin.association['depoList']
                     for di in depoList:
                         if di < 0 or di >= len(self.depos):
                             continue  # 防止越界
@@ -909,13 +917,9 @@ class Event:
 
     # Normalize the sum vector to create a unit vector for the simulated direction
         if norm == 0:
-            reconstructed_direction = np.zeros(3)
+            reconstructed_directions = np.zeros(3)
         else:
-            reconstructed_direction = np.array(sum_vector) / norm
-
-    # Store results in instance variables (optional)
-        self.make_vector = make_vector
-        self.reconstructed_direction = reconstructed_direction
+            reconstructed_directions = np.array(sum_vector) / norm
 
         return reconstructed_direction
     
