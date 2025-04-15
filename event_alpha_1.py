@@ -904,7 +904,7 @@ class Event:
         make_vector = []
         for pt in data:
         # Assuming pt[1], pt[2], pt[3] are the x, y, z coordinates:
-            vector = (-pt[1], -pt[2], -pt[3])
+            vector = (pt[1], pt[2], pt[3])
             make_vector.append(vector)
 
     # Sum all the vectors component-wise
