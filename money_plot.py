@@ -5,9 +5,10 @@ from event import Event  # Ensure that your event module is available
 
 def main(input_filename, output_filename):
     # Initialize the event object.
+    
     # Adjust the second argument ('Marley' or 'Genie') based on your simulation.
     evt = Event(input_filename, 'Genie')
-    
+    #the name of input file is edep_numu_0.5GeV_1kevts.root
     # Create a ROOT histogram: 100 bins from -1 to 1
     hist = ROOT.TH1F("cosThetaHist", "Cosine Theta Histogram;cos(theta);Events", 100, -1, 1)
     
