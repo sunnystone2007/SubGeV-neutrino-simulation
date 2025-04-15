@@ -853,6 +853,7 @@ class Event:
         
         cos_between= np.dot(reconstructed_directions,true_direction)
         print("the cos of two directions is:",cos_between)
+        return cos_between
 
    #here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
     def reconstructing_direction(self, start=0, stop=-1):
@@ -897,8 +898,8 @@ class Event:
         data = self.reconstructing_direction()
         if not data:
             self.make_vector = []
-            self.reconstructing_direction = (0.0, 0.0, 0.0)
-            return self.reconstructing_direction
+            reconstructing_directions = (0.0, 0.0, 0.0)
+            return reconstructing_directions
 
     # Generate the vector from each point to the origin (0.0, 0.0, 0.0)
         make_vector = []
@@ -921,7 +922,7 @@ class Event:
         else:
             reconstructed_directions = np.array(sum_vector) / norm
 
-        return reconstructed_direction
+        return reconstructed_directions
     
 
         
