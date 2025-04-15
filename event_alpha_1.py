@@ -864,7 +864,7 @@ class Event:
         trig = self.selectneutronevent()
 
         if trig == 1:
-            for i, track in enumerate(self.event.tracks):
+            for i, track in enumerate(self.tracks):
                 if not hasattr(track, 'association') or 'depoList' not in track.association:
                     continue  # skip invalid track
 
@@ -883,7 +883,7 @@ class Event:
 
                     if edep >= 0.5:
                         coordinate.append([0.0, x, y, z, t])
-
+        print(coordinate)
         return coordinate
 
     def reconstructed_direction(self):
