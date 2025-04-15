@@ -656,15 +656,10 @@ class Event:
         return pdg,track
 
     def PrintTracksEnergy(self):
-        results = []  # Initialize an empty list
         # Loop over all tracks
+        switch=0
         for i in range(self.tracks.size):
             track = self.tracks[i]
-            for point in track.Points:
-                x = point.GetPosition().X()
-                y = point.GetPosition().Y()
-                z = point.GetPosition().Z()
-                t = point.GetPosition().T()
             pdg_original = track.GetPDGCode()
             pdg = track.GetPDGCode()  # Get the PDG code of the particle
             track_energy = track.energy.get('depoTotal', 0)
@@ -676,12 +671,11 @@ class Event:
                 pdg = track.GetPDGCode()
                 pdg, track = self.loopover(pdg, track)
                 ParentId = track.GetParentId()
-            if pdg == 2112 and ParentId == -1 and track_energy>0.5:
+            if pdg == 2112 and ParentId == -1 :
                 # Instead of printing, store the tuple (or you can use a dict)
-                results.append((pdg_original,track_energy,x,y,z,t))
+                switch=1
                # results.append(\n)
-        print(results)
-        return results
+        return switch
 
 
     def PrintTracksEnergy_ignoreneutron(self):
@@ -864,25 +858,28 @@ class Event:
         trig = self.selectneutronevent()
 
         if trig == 1:
+            
             for i, track in enumerate(self.tracks):
+                
                 if not hasattr(track, 'association') or 'depoList' not in track.association:
                     continue  # skip invalid track
+                switch=self.PrintTracksEnergy()
+                if switch==1:
+                    depoList = track.association['depoList']
+                    for di in depoList:
+                        if di < 0 or di >= len(self.depos):
+                            continue  # 防止越界
 
-                depoList = track.association['depoList']
-                for di in depoList:
-                    if di < 0 or di >= len(self.depos):
-                        continue  # 防止越界
+                        depo = self.depos[di]
+                        x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2m
+                        y = (depo.GetStart().Y() + depo.GetStop().Y()) / 2 * mm2m
+                        z = (depo.GetStart().Z() + depo.GetStop().Z()) / 2 * mm2m
+                        t = (depo.GetStart().T() + depo.GetStop().T()) / 2  # ns
+                        edep = depo.GetEnergyDeposit()  # MeV
+                        l = depo.GetTrackLength() * mm2cm
 
-                    depo = self.depos[di]
-                    x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2m
-                    y = (depo.GetStart().Y() + depo.GetStop().Y()) / 2 * mm2m
-                    z = (depo.GetStart().Z() + depo.GetStop().Z()) / 2 * mm2m
-                    t = (depo.GetStart().T() + depo.GetStop().T()) / 2  # ns
-                    edep = depo.GetEnergyDeposit()  # MeV
-                    l = depo.GetTrackLength() * mm2cm
-
-                    if edep >= 0.5:
-                        coordinate.append([0.0, x, y, z, t])
+                        if edep >= 0.5:
+                            coordinate.append([0.0, x, y, z, t])
         print(coordinate)
         return coordinate
 
