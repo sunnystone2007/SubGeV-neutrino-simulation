@@ -856,7 +856,10 @@ class Event:
         reconstructed_direction = self.reconstructed_direction()
         true_direction = self.read_neutron_direction()
         
-        if reconstructed_direction is None or true_direction is None or true_direction==(0.0,0.0,0.0) or reconstructed_direction==(0.0,0.0,0.0) :
+        if (reconstructed_direction is None or true_direction is None or 
+    np.allclose(np.array(reconstructed_direction), [0.0, 0.0, 0.0]) or 
+    np.allclose(np.array(true_direction), [0.0, 0.0, 0.0])):
+
             print("invalidate direction information")
             return None
         cos_between = np.dot(reconstructed_direction, true_direction) / (norm_rec * norm_true)
