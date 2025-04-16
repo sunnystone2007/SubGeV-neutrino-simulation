@@ -906,12 +906,12 @@ class Event:
         #print(coordinate)
         return coordinate
     def reconstructed_direction(self):
-    """
-    Calculate the reconstructed direction vector based on data from simulating_direction().
-    For each point, multiply the negative direction vector components (pt[1], pt[2], pt[3])
-    by the weight (pt[5]), then sum up all weighted vectors and normalize the result.
-    If the weighted sum has zero magnitude, return None.
-    """
+        """
+        Calculate the reconstructed direction vector based on data from simulating_direction().
+        For each point, multiply the negative direction vector components (pt[1], pt[2], pt[3])
+        by the weight (pt[5]), then sum up all weighted vectors and normalize the result.
+        If the weighted sum has zero magnitude, return None.
+        """
         data = self.reconstructing_direction()
         if not data:
             print("No data from reconstructing_direction(), returning None.")
