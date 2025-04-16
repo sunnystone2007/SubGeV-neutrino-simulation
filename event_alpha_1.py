@@ -843,17 +843,26 @@ class Event:
         
         #print('-'*(8+8+6+6+6+10+10+10))
         return [neutrontrkId, neutronKE]
+
+
+
+
+
     def cos_theta(self):
-        trig=self.selectneutronevent()
-        if trig!=1:
-            return
-        reconstructed_directions=self.reconstructed_direction()
-        true_direction=self.read_neutron_direction()
-        print(reconstructed_directions, true_direction)
         
-        cos_between= np.dot(reconstructed_directions,true_direction)
-        print("the cos of two directions is:",cos_between)
+        trig = self.selectneutronevent()
+        if trig != 1:
+            return None
+        reconstructed_direction = self.reconstructed_direction()
+        true_direction = self.read_neutron_direction()
+        
+        if reconstructed_direction is None or true_direction is None or true_direction==(0.0,0.0,0.0) or reconstructed_direction==(0.0,0.0,0.0) :
+            print("invalidate direction information")
+            return None
+        cos_between = np.dot(reconstructed_direction, true_direction) / (norm_rec * norm_true)
+        print("cos_theta is: ", cos_between)
         return cos_between
+
 
    #here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
     def reconstructing_direction(self, start=0, stop=-1):
@@ -898,7 +907,7 @@ class Event:
         data = self.reconstructing_direction()
         if not data:
             self.make_vector = []
-            reconstructing_directions = (0.0, 0.0, 0.0)
+            reconstructing_directions = (0.0,0.0,0.0)
             return reconstructing_directions
 
     # Generate the vector from each point to the origin (0.0, 0.0, 0.0)
