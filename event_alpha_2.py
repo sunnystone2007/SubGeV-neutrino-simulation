@@ -899,39 +899,39 @@ class Event:
                         l = depo.GetTrackLength() * mm2cm
 
                         if edep >= 0.5:
-                            coordinate.append([0.0, x, y, z, t])
+                            coordinate.append([0.0, x, y, z, t, edep])
         #print(coordinate)
         return coordinate
-
     def reconstructed_direction(self):
+    """
+    Calculate the reconstructed direction vector based on data from simulating_direction().
+    For each point, multiply the negative direction vector components (pt[1], pt[2], pt[3])
+    by the weight (pt[5]), then sum up all weighted vectors and normalize the result.
+    If the weighted sum has zero magnitude, return None.
+    """
         data = self.reconstructing_direction()
         if not data:
-            self.make_vector = []
-            reconstructing_directions = (0.0,0.0,0.0)
-            return reconstructing_directions
-
-    # Generate the vector from each point to the origin (0.0, 0.0, 0.0)
-        make_vector = []
+            print("No data from reconstructing_direction(), returning None.")
+            return None
+    
+        weighted_vectors = []
         for pt in data:
-        # Assuming pt[1], pt[2], pt[3] are the x, y, z coordinates:
-            vector = (pt[1], pt[2], pt[3])
-            make_vector.append(vector)
+            try:
+                weight = pt[5]
+            except IndexError:
+                print("Point data does not contain index 5 (weight), returning None.")
+                return None
+            vector = (-pt[1] * weight, -pt[2] * weight, -pt[3] * weight)
+            weighted_vectors.append(vector)
 
-    # Sum all the vectors component-wise
-        sum_vector = [sum(v[i] for v in make_vector) for i in range(3)]
-
-    # Compute the Euclidean norm of the sum vector
-        norm = math.sqrt(sum(sum_component**2 for sum_component in sum_vector))
-    # Alternatively:
-        norm = math.sqrt(sum(sum_component**2 for sum_component in sum_vector))
-
-    # Normalize the sum vector to create a unit vector for the simulated direction
+    # Sum the weighted vectors component-wise
+        sum_vector = [sum(vec[i] for vec in weighted_vectors) for i in range(3)]
+        norm = math.sqrt(sum(sum_component ** 2 for sum_component in sum_vector))
         if norm == 0:
-            reconstructed_directions = np.zeros(3)
-        else:
-            reconstructed_directions = np.array(sum_vector) / norm
-
-        return reconstructed_directions
+            print("Weighted vector sum has zero magnitude, skipping this event.")
+            return None
+        unit_vector = [x / norm for x in sum_vector]
+        return unit_vector
     
 
         
