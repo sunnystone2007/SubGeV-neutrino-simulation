@@ -856,10 +856,10 @@ class Event:
         reconstructed_direction = self.reconstructed_direction()
         true_direction = self.read_neutron_direction()
         
-        if reconstructed_direction is None or true_direction is None or true_direction==(0.0,0.0,0.0) or reconstructed_direction==(0.0,0.0,0.0) :
+        if reconstructed_direction is None or true_direction is None or  np.all(true_direction == 0.0) or np.all(reconstructed_direction == 0.0) :
             print("invalidate direction information")
             return None
-        cos_between = np.dot(reconstructed_direction, true_direction) / (norm_rec * norm_true)
+        cos_between = np.dot(reconstructed_direction, true_direction) 
         print("cos_theta is: ", cos_between)
         return cos_between
 
@@ -980,7 +980,7 @@ class Event:
             pM = track.GetInitialMomentum().M()
             p_square = (px ** 2 + py ** 2 + pz ** 2) ** 0.5
             if p_square==0.0:
-                direction_vector = np.array([0.577, 0.577, 0.577])
+                direction_vector = np.array([0.0,0.0,0.0])
             else:
                 direction_vector.append(px / p_square)
                 direction_vector.append(py / p_square)
