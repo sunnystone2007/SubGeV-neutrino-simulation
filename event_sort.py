@@ -849,26 +849,61 @@ class Event:
         
         print('-'*(8+8+6+6+6+10+10+10))
         return [neutrontrkId, neutronKE]
-    def trig_primary_particle(self)
+    def trig_primary_particle(self):
+    # if it's not a neutron‐interaction event, return zeros
+        trig=self.selectneutronevent()
+        if trig != 1:
+            return 0, 0, 0, 0
+    
+        # otherwise count primary‐track PDGs
+        trig_mu = trig_pro = trig_pi = trig_others = 0
+        self.tracks=np.array(self.event.Trajectories)
+        for track in self.tracks:
+            pdg      = track.GetPDGCode()
+            parentID = track.GetParentId()
+            # skip any non‐primary track
+            if parentID != -1:
+                continue
+
+            if  pdg == 13:
+                trig_mu += 1
+            elif pdg == 2212:
+                trig_pro += 1
+            elif pdg in (111, 211, -211):
+                trig_pi += 1
+            elif pdg!= 2112:
+                trig_others += 1
+
+        return trig_mu, trig_pro, trig_pi, trig_others
+
+    def trig_primary_particlei(self):
         trig_mu=0
         trig_pro=0
         trig_pi=0
         trig_others=0
-        for i in range(self.tracks.size):
-            track = self.tracks[i]
-            pdg_original = track.GetPDGCode()
-            pdg = track.GetPDGCode()  # Get the PDG code of the particle
-            track_energy = track.energy.get('depoTotal', 0)
-            # Trace back to the parent particle until we find a neutron (PDG code 2112)
-            ParentId = track.GetParentId()
-            if pdg == 13 and ParentId == -1:
-                trig_mu+=1
-            if pdg ==2212 and ParentId==-1
-                trig_pro+=1
-            if pdg == 111 or pdg ==211 or pdg ==-211 and ParentId == -1:
-                trig_pi+=1
-            if pdg not in (111, 211, -211, 13, 2212) and ParentId == -1:
-                trig_others=1
+        self.tracks = np.array(self.event.Trajectories)
+        trig=self.selectneutronevent()
+    
+        if trig!=1:
+            trig_mu=0
+            trig_others=0
+            trig_pro=0
+            trig_pi=0
+        else:
+            for i in range(self.tracks.size):
+                track = self.tracks[i]
+                pdg_original = track.GetPDGCode()
+                pdg = track.GetPDGCode()  # Get the PDG code of the particle
+                # Trace back to the parent particle until we find a neutron (PDG code 2112)
+                ParentId = track.GetParentId()
+                if pdg == 13 and ParentId == -1:
+                    trig_mu+=1
+                if pdg ==2212 and ParentId==-1:
+                    trig_pro+=1
+                if (pdg == 111 or pdg == 211 or pdg == -211) and ParentId == -1:
+                    trig_pi+=1
+                if pdg not in (111, 211, -211, 13, 2212,2112) and ParentId == -1:
+                    trig_others=1
         return trig_mu,trig_pro,trig_pi,trig_others
       
 
@@ -970,19 +1005,21 @@ class Event:
     
     def selectneutronevent(self):
         trig = 0
+        self.tracks = np.array(self.event.Trajectories)
         for i in range(self.tracks.size):
             track = self.tracks[i]
-            pdg_original = track.GetPDGCode()
             pdg = track.GetPDGCode()  # Get the PDG code of the particle
-            track_energy = track.energy.get('depoTotal', 0)
+            #track_energy = track.energy.get('depoTotal', 0)
             # Trace back to the parent particle until we find a neutron (PDG code 2112)
             ParentId = track.GetParentId()
             if pdg == 2112 and ParentId == -1:
                 trig+=1
-        if trig==1:
-            print("this",self.currentEntry,"th event has one neutron neutrino interaction, it is a good event")
-        elif trig!=0 and trig!=1:
-            print("this",self.currentEntry,"th event has",trig,"neutron neutrino interaction, it is a BAD event")
+
+        print(trig,"trig")
+        #if trig==1:
+         #   print("this",self.currentEntry,"th event has one neutron neutrino interaction, it is a good event")
+        #elif trig!=0 and trig!=1:
+         #   print("this",self.currentEntry,"th event has",trig,"neutron neutrino interaction, it is a BAD event")
         return trig
 
     # ----------------------
