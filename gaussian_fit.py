@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import ROOT
-from event import Event  # Ensure that your event module is available
+from event_alpha1 import Event  # Ensure that your event module is available
 
 def main(input_filename, output_filename):
     # Initialize the event object.
