@@ -8,16 +8,16 @@ def main(input_filename, output_filename):
     evt = Event(input_filename, 'Genie')
 
     # Create a ROOT histogram: 100 bins from -1 to 1
-    hist = ROOT.TH1F("cosThetaHist",
-                     "Cosine Theta Histogram;cos(#theta);Events",
-                     100, -1, 1)
+    hist = ROOT.TH1F("AngleDifferenceHist",
+                     "AngleDifferenceHist;angle(in degrees);Events",
+                     180, 0, 180)
 
     # Loop over all events in the file
     for i in range(evt.nEntry):
         evt.Jump(i)
-        cos_between = evt.cos_theta()  # your newly added method
-        if cos_between is not None:
-            hist.Fill(cos_between)
+        angle = evt.cos_theta()  # your newly added method
+        if angle is not None:
+            hist.Fill(angle)
         else:
             print(f"Warning: cos_theta() returned None for event {i}")
 
@@ -33,7 +33,7 @@ def main(input_filename, output_filename):
     hist.Draw()
     gaus.SetLineColor(ROOT.kRed)
     gaus.Draw("same")
-    canvas.SaveAs("cosThetaFit.png")
+    canvas.SaveAs("AngleDifferenceHist.png")
 
     # Write the raw histogram (without fit) to the output ROOT file
     out_file = ROOT.TFile(output_filename, "RECREATE")
