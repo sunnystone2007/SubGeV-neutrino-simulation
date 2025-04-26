@@ -27,8 +27,19 @@ class Plotter:
         mm2m = 0.001
         mm2cm = 0.1
         for i, track in enumerate(self.event.tracks):
-            depoList = track.association['depoList']
-            ancestor = track.association['ancestor']
+            track_origin = track
+            pdg = track.GetPDGCode()
+            ParentId = track.GetParentId()
+            while pdg != 2112 and ParentId != -1:
+                    track = self.tracks[ParentId]
+                    pdg = track.GetPDGCode()
+                    pdg, track = self.loopover(pdg, track)
+                    ParentId = track.GetParentId()
+            if pdg==2112 and ParentId==-1:
+                depoList = track_origin.association['depoList']
+                ancestor = track_origin.association['ancestor']
+            
+            
             for di in depoList:
                 depo = self.event.depos[di]
                 x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2m
