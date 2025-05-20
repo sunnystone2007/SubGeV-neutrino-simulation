@@ -643,12 +643,11 @@ class Event:
         #         self.info['E_depoList'][4] += depoE
         #     else:
         #         self.info['E_depoList'][5] += depoE
+    #this is a primary function i design to find the ancester, but i think there are easier way of doing so
     def loopover(self,pdg,track):
         while pdg != 2112:
             ParentId = track.GetParentId()
-
             track = self.tracks[ParentId]
-
             pdg = track.GetPDGCode()
             # Break out of the loop if there is no parent (ParentId == -1)
             if ParentId == -1:
@@ -677,7 +676,7 @@ class Event:
                # results.append(\n)
         return switch
 
-
+    #for now this function is totally useless because we are still wondering if neutron can deposit a lot of energy
     def PrintTracksEnergy_ignoreneutron(self):
         results = []  # Initialize an empty list
         # Loop over all tracks
@@ -703,7 +702,9 @@ class Event:
     
 
 
-
+    #select those tracks with neutron as ancester, we can use this function in antinumu samples because we assume hase on 
+    #energy deposit topology we are always able to find those edep which belongs to neutron
+    #
     def select_the_right_track(self):
         results = []  # Initialize an empty list
         # Loop over all tracks
