@@ -866,7 +866,38 @@ class Event:
         print("cos_theta is: ", cos_between)
         return cos_between
 
+    def edep_based_information(self)
+        information=[]
+        trig = self.selectneutronevent()
+        mm2cm=0.1
+        if trig == 1:
+            for i in range(self.tracks.size):
+                track_origin = self.tracks[i]
+                track= self.tracks[i]
+                pdg_original = track.GetPDGCode()
+                pdg = track.GetPDGCode()  # Get the PDG code of the particle
+                track_energy = track.energy.get('depoTotal', 0)
+                # Trace back to the parent particle until we find a neutron (PDG code 2112)
+                pdg, track = self.loopover(pdg, track)
+                ParentId = track.GetParentId()
+                while pdg == 2112 and ParentId != -1:
+                    track = self.tracks[ParentId]
+                    pdg = track.GetPDGCode()
+                    pdg, track = self.loopover(pdg, track)
+                    ParentId = track.GetParentId()
+                if pdg == 2112 and ParentId == -1 :
+                    depoList = track_origin.association['depoList']
+                    for di in depoList:
+                        if di < 0 or di >= len(self.depos):
+                            continue  # 防止越界
 
+                        depo = self.depos[di]
+                        x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2cm
+                        y = (depo.GetStart().Y() + depo.GetStop().Y()) / 2 * mm2cm
+                        z = (depo.GetStart().Z() + depo.GetStop().Z()) / 2 * mm2cm
+                        t = (depo.GetStart().T() + depo.GetStop().T()) / 2  # ns
+                        edep = depo.GetEnergyDeposit()  # MeV
+        
    #here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
     def reconstructing_direction(self, start=0, stop=-1):
         coordinate = []
