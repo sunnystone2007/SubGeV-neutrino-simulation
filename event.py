@@ -8,6 +8,7 @@ import numpy as np
 import random
 import math
 
+
 class Event:
 
     def __init__(self, fileName, evgen='Genie'):
@@ -19,8 +20,8 @@ class Event:
         self.currentEntry = 0
         # create a folder to store plots
         self.plotpath = "./plots"
-        if not os.path.exists( self.plotpath):
-            os.makedirs( self.plotpath)
+        if not os.path.exists(self.plotpath):
+            os.makedirs(self.plotpath)
             print("plotpath '" + self.plotpath + "' did not exist. It has been created!")
 
     # ------------------------
@@ -46,33 +47,32 @@ class Event:
         self.event = TG4Event()
         self.simTree.SetBranchAddress("Event", self.event)
 
-
         self.event = TG4Event()
         self.simTree.SetBranchAddress("Event", self.event)
 
     # ------------------------
     def Jump(self, entryNo):
-        if entryNo%100 == 0:
+        if entryNo % 100 == 0:
             print(f'reading event {entryNo}/{self.nEntry}')
 
         self.currentEntry = entryNo
         self.simTree.GetEntry(entryNo)
-         
+
         self.ReadVertex()
         self.ReadTracks()
         self.ReadEnergyDepo('SimEnergyDeposit')
-        #self.PrintVertex
-        #self.PrintTracksEnergy()
-        #self.PrintTracksEnergy_ignoreneutron
-        #self.selectneutronevent()
-        #self.PrintTracks
-        #self.read_neutron_direction
+        # self.PrintVertex
+        # self.PrintTracksEnergy()
+        # self.PrintTracksEnergy_ignoreneutron
+        # self.selectneutronevent()
+        # self.PrintTracks
+        # self.read_neutron_direction
 
         self.info = {}
         self.info['Event_ID'] = self.currentEntry
         self.info['E_nu'] = 0
         self.info['E_avail'] = 0
-        self.info['E_availList'] = np.zeros(8) # lepton, proton, neutron, pi+-, pi0, gamma, alpha, others.
+        self.info['E_availList'] = np.zeros(8)  # lepton, proton, neutron, pi+-, pi0, gamma, alpha, others.
         self.info['E_depoTotal'] = 0
         self.info['E_depoTotal_track'] = 0
         self.info['Q_depoTotal_dots_th_75keV'] = 0
@@ -92,26 +92,26 @@ class Event:
         self.info['L_depoTotal_MBox_avg_140PEpMeV'] = 0
         self.info['L_depoTotal_MBox_avg_100PEpMeV'] = 0
         self.info['L_depoTotal_MBox_avg_35PEpMeV'] = 0
-        self.info['E_depoList'] = np.zeros(8) # lepton, proton, neutron, pi+-, pi0, gamma, alpha, others.
+        self.info['E_depoList'] = np.zeros(8)  # lepton, proton, neutron, pi+-, pi0, gamma, alpha, others.
         self.info['E_depoList_track'] = np.zeros(8)
-        self.info['Q_depoList']               = np.zeros(8)
-        self.info['Q_depoList_th_75keV']      = np.zeros(8)
-        self.info['Q_depoList_th_500keV']     = np.zeros(8)
+        self.info['Q_depoList'] = np.zeros(8)
+        self.info['Q_depoList_th_75keV'] = np.zeros(8)
+        self.info['Q_depoList_th_500keV'] = np.zeros(8)
         self.info['Q_depoList_dots_th_75keV'] = np.zeros(8)
-        self.info['Q_depoList_MBox']           = np.zeros(8)
-        self.info['Q_depoList_MBox_th_75keV']  = np.zeros(8)
+        self.info['Q_depoList_MBox'] = np.zeros(8)
+        self.info['Q_depoList_MBox_th_75keV'] = np.zeros(8)
         self.info['Q_depoList_MBox_th_500keV'] = np.zeros(8)
         self.info['L_depoList_avg_220PEpMeV'] = np.zeros(8)
         self.info['L_depoList_avg_180PEpMeV'] = np.zeros(8)
         self.info['L_depoList_avg_140PEpMeV'] = np.zeros(8)
         self.info['L_depoList_avg_100PEpMeV'] = np.zeros(8)
-        self.info['L_depoList_avg_35PEpMeV']  = np.zeros(8)
+        self.info['L_depoList_avg_35PEpMeV'] = np.zeros(8)
         self.info['L_depoList_MBox_avg_220PEpMeV'] = np.zeros(8)
         self.info['L_depoList_MBox_avg_180PEpMeV'] = np.zeros(8)
         self.info['L_depoList_MBox_avg_140PEpMeV'] = np.zeros(8)
         self.info['L_depoList_MBox_avg_100PEpMeV'] = np.zeros(8)
-        self.info['L_depoList_MBox_avg_35PEpMeV']  = np.zeros(8)
-        self.info['N_parList'] = np.zeros(8) # lepton, proton, neutron, pi+-, pi0, gamma, alpha, others.
+        self.info['L_depoList_MBox_avg_35PEpMeV'] = np.zeros(8)
+        self.info['N_parList'] = np.zeros(8)  # lepton, proton, neutron, pi+-, pi0, gamma, alpha, others.
         self.info['nu_pdg'] = 0
         self.info['nu_xs'] = self.vertex.GetCrossSection()
         self.info['nu_proc'], self.info['nu_nucl'] = self.GetReaction()
@@ -132,7 +132,7 @@ class Event:
         # following assumes the first particle is always the neutrino.
         self.genieTree.GetEntry(self.currentEntry)
         self.info['nu_pdg'] = self.genieTree.StdHepPdg[0]
-        self.info['E_nu'] = self.genieTree.StdHepP4[3]*1000
+        self.info['E_nu'] = self.genieTree.StdHepP4[3] * 1000
 
     # ------------------------
     def ReadMarley(self):
@@ -143,7 +143,7 @@ class Event:
         if self.GetnuPDGFromFileName() == 'anue': self.info['nu_pdg'] = -12
         if self.GetnuPDGFromFileName() == 'anumu': self.info['nu_pdg'] = -14
         self.info['E_nu'] = self.GetEnuFromFileName()
-        if self.currentEntry == 0: # only print once
+        if self.currentEntry == 0:  # only print once
             print("Marley events: assert info from file name")
 
     # ------------------------
@@ -155,14 +155,14 @@ class Event:
 
         self.vertex = primaries[0]
 
-    #--------------------------
+    # --------------------------
     def GetReaction(self):
         txt_list = self.vertex.GetReaction().split(';')
         proc = ''
         nucl = 0
         for x in txt_list[2:]:
             if 'proc:' in x:
-                proc = x.replace('proc:', '').replace('Weak[','').replace('],', '')
+                proc = x.replace('proc:', '').replace('Weak[', '').replace('],', '')
             elif 'N:' in x:
                 nucl = int(x.replace('N:', ''))
         # print(proc, nucl)
@@ -176,11 +176,11 @@ class Event:
         else:
             proc_num = 30
         proc_dict = {
-            'QES' : 1,
-            'RES' : 2,
-            'DIS' : 3,
-            'COH' : 4,
-            'MEC' : 5,
+            'QES': 1,
+            'RES': 2,
+            'DIS': 3,
+            'COH': 4,
+            'MEC': 5,
         }
         proc_num += proc_dict.get(proc, 0)
         return proc_num, nucl
@@ -236,9 +236,9 @@ class Event:
         for i, depo in enumerate(self.depos):
             trkId = depo.Contrib[0]
             edep = depo.GetEnergyDeposit()
-            trkLength = depo.GetTrackLength() *mm2cm
+            trkLength = depo.GetTrackLength() * mm2cm
             Qdep = self.ChargeBirksLaw(edep, trkLength)
-            Qdep_MBox = self.ChargeModifiedBoxModel(edep, trkLength) # Modified Box Model
+            Qdep_MBox = self.ChargeModifiedBoxModel(edep, trkLength)  # Modified Box Model
             track = self.tracks[trkId]
             track.association['depoList'].append(i)
             track.energy['depoTotal'] += edep
@@ -269,52 +269,51 @@ class Event:
             # (dL/W_ph)*PCE = (dL/19.5eV)*PCE = number of photons (taking into account Birks model)
             Ldep = edep - Qdep
             Ldep_MBox = edep - Qdep_MBox
-            nPE_220 = (Ldep*1000000/19.5)*0.01
-            nPE_180 = (Ldep*1000000/19.5)*0.0083
-            nPE_140 = (Ldep*1000000/19.5)*0.0065
-            nPE_100 = (Ldep*1000000/19.5)*0.0046
-            nPE_35  = (Ldep*1000000/19.5)*0.0016
-            nPE_220_MBox = Ldep_MBox*220
-            nPE_180_MBox = Ldep_MBox*180
-            nPE_140_MBox = Ldep_MBox*140
-            nPE_100_MBox = Ldep_MBox*100
-            nPE_35_MBox  = Ldep_MBox*35
+            nPE_220 = (Ldep * 1000000 / 19.5) * 0.01
+            nPE_180 = (Ldep * 1000000 / 19.5) * 0.0083
+            nPE_140 = (Ldep * 1000000 / 19.5) * 0.0065
+            nPE_100 = (Ldep * 1000000 / 19.5) * 0.0046
+            nPE_35 = (Ldep * 1000000 / 19.5) * 0.0016
+            nPE_220_MBox = Ldep_MBox * 220
+            nPE_180_MBox = Ldep_MBox * 180
+            nPE_140_MBox = Ldep_MBox * 140
+            nPE_100_MBox = Ldep_MBox * 100
+            nPE_35_MBox = Ldep_MBox * 35
             nPE_220_detected = random.gauss(nPE_220, math.sqrt(nPE_220))
             nPE_180_detected = random.gauss(nPE_180, math.sqrt(nPE_180))
             nPE_140_detected = random.gauss(nPE_140, math.sqrt(nPE_140))
             nPE_100_detected = random.gauss(nPE_100, math.sqrt(nPE_100))
-            nPE_35_detected  = random.gauss(nPE_35, math.sqrt(nPE_35))
+            nPE_35_detected = random.gauss(nPE_35, math.sqrt(nPE_35))
             nPE_220_MBox_detected = random.gauss(nPE_220_MBox, math.sqrt(nPE_220_MBox))
             nPE_180_MBox_detected = random.gauss(nPE_180_MBox, math.sqrt(nPE_180_MBox))
             nPE_140_MBox_detected = random.gauss(nPE_140_MBox, math.sqrt(nPE_140_MBox))
             nPE_100_MBox_detected = random.gauss(nPE_100_MBox, math.sqrt(nPE_100_MBox))
-            nPE_35_MBox_detected  = random.gauss(nPE_35_MBox,  math.sqrt(nPE_35_MBox))
-            Ldep_avg_220PEpMeV_detected = nPE_220_detected*19.5/1000000/0.01 # MeV
-            Ldep_avg_180PEpMeV_detected = nPE_180_detected*19.5/1000000/0.0083
-            Ldep_avg_140PEpMeV_detected = nPE_140_detected*19.5/1000000/0.0065
-            Ldep_avg_100PEpMeV_detected = nPE_100_detected*19.5/1000000/0.0046
-            Ldep_avg_35PEpMeV_detected  = nPE_35_detected*19.5/1000000/0.0016
-            Ldep_avg_220PEpMeV_MBox_detected = nPE_220_MBox_detected/220
-            Ldep_avg_180PEpMeV_MBox_detected = nPE_180_MBox_detected/180
-            Ldep_avg_140PEpMeV_MBox_detected = nPE_140_MBox_detected/140
-            Ldep_avg_100PEpMeV_MBox_detected = nPE_100_MBox_detected/100
-            Ldep_avg_35PEpMeV_MBox_detected  = nPE_35_MBox_detected/35
+            nPE_35_MBox_detected = random.gauss(nPE_35_MBox, math.sqrt(nPE_35_MBox))
+            Ldep_avg_220PEpMeV_detected = nPE_220_detected * 19.5 / 1000000 / 0.01  # MeV
+            Ldep_avg_180PEpMeV_detected = nPE_180_detected * 19.5 / 1000000 / 0.0083
+            Ldep_avg_140PEpMeV_detected = nPE_140_detected * 19.5 / 1000000 / 0.0065
+            Ldep_avg_100PEpMeV_detected = nPE_100_detected * 19.5 / 1000000 / 0.0046
+            Ldep_avg_35PEpMeV_detected = nPE_35_detected * 19.5 / 1000000 / 0.0016
+            Ldep_avg_220PEpMeV_MBox_detected = nPE_220_MBox_detected / 220
+            Ldep_avg_180PEpMeV_MBox_detected = nPE_180_MBox_detected / 180
+            Ldep_avg_140PEpMeV_MBox_detected = nPE_140_MBox_detected / 140
+            Ldep_avg_100PEpMeV_MBox_detected = nPE_100_MBox_detected / 100
+            Ldep_avg_35PEpMeV_MBox_detected = nPE_35_MBox_detected / 35
 
             track.energy['depoTotal_light_avg_220PEpMeV'] += Ldep_avg_220PEpMeV_detected
             track.energy['depoTotal_light_avg_180PEpMeV'] += Ldep_avg_180PEpMeV_detected
             track.energy['depoTotal_light_avg_140PEpMeV'] += Ldep_avg_140PEpMeV_detected
             track.energy['depoTotal_light_avg_100PEpMeV'] += Ldep_avg_100PEpMeV_detected
-            track.energy['depoTotal_light_avg_35PEpMeV']  += Ldep_avg_35PEpMeV_detected
+            track.energy['depoTotal_light_avg_35PEpMeV'] += Ldep_avg_35PEpMeV_detected
 
             track.energy['depoTotal_light_avg_220PEpMeV_MBox'] += Ldep_avg_220PEpMeV_MBox_detected
             track.energy['depoTotal_light_avg_180PEpMeV_MBox'] += Ldep_avg_180PEpMeV_MBox_detected
             track.energy['depoTotal_light_avg_140PEpMeV_MBox'] += Ldep_avg_140PEpMeV_MBox_detected
             track.energy['depoTotal_light_avg_100PEpMeV_MBox'] += Ldep_avg_100PEpMeV_MBox_detected
-            track.energy['depoTotal_light_avg_35PEpMeV_MBox']  += Ldep_avg_35PEpMeV_MBox_detected
+            track.energy['depoTotal_light_avg_35PEpMeV_MBox'] += Ldep_avg_35PEpMeV_MBox_detected
 
         # E_tot = np.sum([depo.GetEnergyDeposit() for depo in self.depos])
         # print('total deposit energy: ', E_tot)
-
 
     # ------------------------
     def ChargeBirksLaw(self, edep, trkLength):
@@ -323,7 +322,7 @@ class Event:
         # A = 0.8, kQ = 0.0972 g/(MeV*cm2) @500V/cm
         # LAr density 1.4g/cm^3
         # when considering light, need to take account excitation and ionization ratio (0.83 vs 0.17)
-        return 0.83*edep*0.8/(1+0.0972*edep/trkLength/1.4)
+        return 0.83 * edep * 0.8 / (1 + 0.0972 * edep / trkLength / 1.4)
 
     # ------------------------
     def ChargeModifiedBoxModel(self, edep, trkLength):
@@ -332,21 +331,21 @@ class Event:
         # A = 0.930, B = 0.424 g/(MeV*cm2) @500V/cm
         # LAr density 1.4g/cm^3
         # when considering light, need to take account excitation and ionization ratio (0.83 vs 0.17)
-        return 0.83*edep*np.log(0.930+0.424*edep/trkLength/1.4)/(0.424*edep/trkLength/1.4)
+        return 0.83 * edep * np.log(0.930 + 0.424 * edep / trkLength / 1.4) / (0.424 * edep / trkLength / 1.4)
 
     # ------------------------
     def FindDepoListFromTrack(self, trkId):
         x = [i for (i, depo)
              in enumerate(self.depos)
              if (trkId in depo.Contrib)]
-            # if (trkId == depo.GetPrimaryId())]
+        # if (trkId == depo.GetPrimaryId())]
         return x
 
     # ------------------------
     def PrintVertex(self):
         if self.evgen == 'Genie':
             self.info['nu_pdg'] = self.genieTree.StdHepPdg[0]
-            self.info['E_nu'] = self.genieTree.StdHepP4[3]*1000
+            self.info['E_nu'] = self.genieTree.StdHepP4[3] * 1000
             print(f"neutrino {self.info['nu_pdg']}: {self.info['E_nu']} MeV")
         elif self.evgen == 'Marley':
             self.ReadMarley()
@@ -358,13 +357,13 @@ class Event:
         posy = self.vertex.GetPosition().Y()
         posz = self.vertex.GetPosition().Z()
         print(f"vertex @: ({posx}, {posy}, {posz}) [mm]")
-        #print(f"reaction: {self.vertex.GetReaction()}")
+        # print(f"reaction: {self.vertex.GetReaction()}")
         print(f"interaction #: {self.vertex.GetInteractionNumber()}")
 
         print(f"{self.vertex.Particles.size()} particles at the vertex", )
-        #print(f'{"pdg":>8}{"name":>8}{"trkId":>6}{"mass":>10}{"KE":>10}')
-        #print(f'{"":>8}{"":>8}{"":>6}{"[MeV]":>10}{"[MeV]":>10}')
-        #print('-'*(8+8+6+10+10))
+        # print(f'{"pdg":>8}{"name":>8}{"trkId":>6}{"mass":>10}{"KE":>10}')
+        # print(f'{"":>8}{"":>8}{"":>6}{"[MeV]":>10}{"[MeV]":>10}')
+        # print('-'*(8+8+6+10+10))
         for particle in self.vertex.Particles:
             trkId = particle.GetTrackId()
             # Skip negative trk id: in the case of Marley events,
@@ -373,16 +372,16 @@ class Event:
             if trkId < 0: continue
             pdg = particle.GetPDGCode()
             name = particle.GetName()
-            #mom_direction=particle.GetMomentum.direction()
-            #print("this is momentum direction:",mom_direction)
+            # mom_direction=particle.GetMomentum.direction()
+            # print("this is momentum direction:",mom_direction)
             mom = particle.GetMomentum()
-            #print("this is momentum direction:",mom)
+            # print("this is momentum direction:",mom)
             mass = mom.M()
             KE = mom.E() - mass
-        #print(f'{pdg:>8d}{name:>8s}{trkId:>6d}{mass:>10.2f}{KE:>10.2f}')
-        print('-'*(8+8+6+10+10))
+        # print(f'{pdg:>8d}{name:>8s}{trkId:>6d}{mass:>10.2f}{KE:>10.2f}')
+        print('-' * (8 + 8 + 6 + 10 + 10))
 
-        #print(f'{self.info}')
+        # print(f'{self.info}')
 
     # ------------------------
     def FillEnergyInfo(self):
@@ -404,22 +403,22 @@ class Event:
                 # dots/blips
                 depoE_track = 0
                 depoQ_dots = track.energy['depoTotal_charge_th_75keV']
-            depoQ        = self.GetChargeDepoWithDesendents(trkId)[0]
-            depoQ_75keV  = self.GetChargeDepoWithDesendents(trkId)[1]
+            depoQ = self.GetChargeDepoWithDesendents(trkId)[0]
+            depoQ_75keV = self.GetChargeDepoWithDesendents(trkId)[1]
             depoQ_500keV = self.GetChargeDepoWithDesendents(trkId)[2]
-            depoQ_MBox        = self.GetChargeMBoxDepoWithDesendents(trkId)[0]
-            depoQ_MBox_75keV  = self.GetChargeMBoxDepoWithDesendents(trkId)[1]
+            depoQ_MBox = self.GetChargeMBoxDepoWithDesendents(trkId)[0]
+            depoQ_MBox_75keV = self.GetChargeMBoxDepoWithDesendents(trkId)[1]
             depoQ_MBox_500keV = self.GetChargeMBoxDepoWithDesendents(trkId)[2]
             depoL_220PEpMeV = self.GetLightDepoWithDesendents(trkId)[0]
             depoL_180PEpMeV = self.GetLightDepoWithDesendents(trkId)[1]
             depoL_140PEpMeV = self.GetLightDepoWithDesendents(trkId)[2]
             depoL_100PEpMeV = self.GetLightDepoWithDesendents(trkId)[3]
-            depoL_35PEpMeV  = self.GetLightDepoWithDesendents(trkId)[4]
+            depoL_35PEpMeV = self.GetLightDepoWithDesendents(trkId)[4]
             depoL_MBox_220PEpMeV = self.GetLightMBoxDepoWithDesendents(trkId)[0]
             depoL_MBox_180PEpMeV = self.GetLightMBoxDepoWithDesendents(trkId)[1]
             depoL_MBox_140PEpMeV = self.GetLightMBoxDepoWithDesendents(trkId)[2]
             depoL_MBox_100PEpMeV = self.GetLightMBoxDepoWithDesendents(trkId)[3]
-            depoL_MBox_35PEpMeV  = self.GetLightMBoxDepoWithDesendents(trkId)[4]
+            depoL_MBox_35PEpMeV = self.GetLightMBoxDepoWithDesendents(trkId)[4]
             mom = particle.GetMomentum()
             mass = mom.M()
             KE = mom.E() - mass
@@ -436,139 +435,139 @@ class Event:
             self.info['L_depoTotal_avg_180PEpMeV'] += depoL_180PEpMeV
             self.info['L_depoTotal_avg_140PEpMeV'] += depoL_140PEpMeV
             self.info['L_depoTotal_avg_100PEpMeV'] += depoL_100PEpMeV
-            self.info['L_depoTotal_avg_35PEpMeV']  += depoL_35PEpMeV
+            self.info['L_depoTotal_avg_35PEpMeV'] += depoL_35PEpMeV
             self.info['L_depoTotal_MBox_avg_220PEpMeV'] += depoL_MBox_220PEpMeV
             self.info['L_depoTotal_MBox_avg_180PEpMeV'] += depoL_MBox_180PEpMeV
             self.info['L_depoTotal_MBox_avg_140PEpMeV'] += depoL_MBox_140PEpMeV
             self.info['L_depoTotal_MBox_avg_100PEpMeV'] += depoL_MBox_100PEpMeV
-            self.info['L_depoTotal_MBox_avg_35PEpMeV']  += depoL_MBox_35PEpMeV
+            self.info['L_depoTotal_MBox_avg_35PEpMeV'] += depoL_MBox_35PEpMeV
             # fill E_availList: lepton, proton, neutron, pi+-, pi0, gamma, alpha, others.
             if (pdg in [13, -13, 11, -11]):
                 self.info['E_avail'] += (KE + mass)
                 self.info['E_availList'][0] += (KE + mass)
-                self.info['E_depoList'][0]       += depoE
+                self.info['E_depoList'][0] += depoE
                 self.info['E_depoList_track'][0] += depoE_track
-                self.info['Q_depoList'][0]                += depoQ
-                self.info['Q_depoList_th_75keV'][0]       += depoQ_75keV
-                self.info['Q_depoList_th_500keV'][0]      += depoQ_500keV
-                self.info['Q_depoList_dots_th_75keV'][0]  += depoQ_dots
-                self.info['Q_depoList_MBox'][0]           += depoQ_MBox
-                self.info['Q_depoList_MBox_th_75keV'][0]  += depoQ_MBox_75keV
+                self.info['Q_depoList'][0] += depoQ
+                self.info['Q_depoList_th_75keV'][0] += depoQ_75keV
+                self.info['Q_depoList_th_500keV'][0] += depoQ_500keV
+                self.info['Q_depoList_dots_th_75keV'][0] += depoQ_dots
+                self.info['Q_depoList_MBox'][0] += depoQ_MBox
+                self.info['Q_depoList_MBox_th_75keV'][0] += depoQ_MBox_75keV
                 self.info['Q_depoList_MBox_th_500keV'][0] += depoQ_MBox_500keV
                 self.info['L_depoList_avg_220PEpMeV'][0] += depoL_220PEpMeV
                 self.info['L_depoList_avg_180PEpMeV'][0] += depoL_180PEpMeV
                 self.info['L_depoList_avg_140PEpMeV'][0] += depoL_140PEpMeV
                 self.info['L_depoList_avg_100PEpMeV'][0] += depoL_100PEpMeV
-                self.info['L_depoList_avg_35PEpMeV'][0]  += depoL_35PEpMeV
+                self.info['L_depoList_avg_35PEpMeV'][0] += depoL_35PEpMeV
                 self.info['L_depoList_MBox_avg_220PEpMeV'][0] += depoL_MBox_220PEpMeV
                 self.info['L_depoList_MBox_avg_180PEpMeV'][0] += depoL_MBox_180PEpMeV
                 self.info['L_depoList_MBox_avg_140PEpMeV'][0] += depoL_MBox_140PEpMeV
                 self.info['L_depoList_MBox_avg_100PEpMeV'][0] += depoL_MBox_100PEpMeV
-                self.info['L_depoList_MBox_avg_35PEpMeV'][0]  += depoL_MBox_35PEpMeV
+                self.info['L_depoList_MBox_avg_35PEpMeV'][0] += depoL_MBox_35PEpMeV
                 self.info['N_parList'][0] += 1
-            elif (pdg == 2212): # proton
+            elif (pdg == 2212):  # proton
                 self.info['E_avail'] += KE
                 self.info['E_availList'][1] += KE
-                self.info['E_depoList'][1]       += depoE
+                self.info['E_depoList'][1] += depoE
                 self.info['E_depoList_track'][1] += depoE_track
-                self.info['Q_depoList'][1]                += depoQ
-                self.info['Q_depoList_th_75keV'][1]       += depoQ_75keV
-                self.info['Q_depoList_th_500keV'][1]      += depoQ_500keV
-                self.info['Q_depoList_dots_th_75keV'][1]  += depoQ_dots
-                self.info['Q_depoList_MBox'][1]           += depoQ_MBox
-                self.info['Q_depoList_MBox_th_75keV'][1]  += depoQ_MBox_75keV
+                self.info['Q_depoList'][1] += depoQ
+                self.info['Q_depoList_th_75keV'][1] += depoQ_75keV
+                self.info['Q_depoList_th_500keV'][1] += depoQ_500keV
+                self.info['Q_depoList_dots_th_75keV'][1] += depoQ_dots
+                self.info['Q_depoList_MBox'][1] += depoQ_MBox
+                self.info['Q_depoList_MBox_th_75keV'][1] += depoQ_MBox_75keV
                 self.info['Q_depoList_MBox_th_500keV'][1] += depoQ_MBox_500keV
                 self.info['L_depoList_avg_220PEpMeV'][1] += depoL_220PEpMeV
                 self.info['L_depoList_avg_180PEpMeV'][1] += depoL_180PEpMeV
                 self.info['L_depoList_avg_140PEpMeV'][1] += depoL_140PEpMeV
                 self.info['L_depoList_avg_100PEpMeV'][1] += depoL_100PEpMeV
-                self.info['L_depoList_avg_35PEpMeV'][1]  += depoL_35PEpMeV
+                self.info['L_depoList_avg_35PEpMeV'][1] += depoL_35PEpMeV
                 self.info['L_depoList_MBox_avg_220PEpMeV'][1] += depoL_MBox_220PEpMeV
                 self.info['L_depoList_MBox_avg_180PEpMeV'][1] += depoL_MBox_180PEpMeV
                 self.info['L_depoList_MBox_avg_140PEpMeV'][1] += depoL_MBox_140PEpMeV
                 self.info['L_depoList_MBox_avg_100PEpMeV'][1] += depoL_MBox_100PEpMeV
-                self.info['L_depoList_MBox_avg_35PEpMeV'][1]  += depoL_MBox_35PEpMeV
+                self.info['L_depoList_MBox_avg_35PEpMeV'][1] += depoL_MBox_35PEpMeV
                 self.info['N_parList'][1] += 1
-            elif (pdg == 2112): # neutron
+            elif (pdg == 2112):  # neutron
                 self.info['E_avail'] += KE
                 self.info['E_availList'][2] += KE
-                self.info['E_depoList'][2]       += depoE
+                self.info['E_depoList'][2] += depoE
                 self.info['E_depoList_track'][2] += depoE_track
-                self.info['Q_depoList'][2]                += depoQ
-                self.info['Q_depoList_th_75keV'][2]       += depoQ_75keV
-                self.info['Q_depoList_th_500keV'][2]      += depoQ_500keV
-                self.info['Q_depoList_dots_th_75keV'][2]  += depoQ_dots
-                self.info['Q_depoList_MBox'][2]           += depoQ_MBox
-                self.info['Q_depoList_MBox_th_75keV'][2]  += depoQ_MBox_75keV
+                self.info['Q_depoList'][2] += depoQ
+                self.info['Q_depoList_th_75keV'][2] += depoQ_75keV
+                self.info['Q_depoList_th_500keV'][2] += depoQ_500keV
+                self.info['Q_depoList_dots_th_75keV'][2] += depoQ_dots
+                self.info['Q_depoList_MBox'][2] += depoQ_MBox
+                self.info['Q_depoList_MBox_th_75keV'][2] += depoQ_MBox_75keV
                 self.info['Q_depoList_MBox_th_500keV'][2] += depoQ_MBox_500keV
                 self.info['L_depoList_avg_220PEpMeV'][2] += depoL_220PEpMeV
                 self.info['L_depoList_avg_180PEpMeV'][2] += depoL_180PEpMeV
                 self.info['L_depoList_avg_140PEpMeV'][2] += depoL_140PEpMeV
                 self.info['L_depoList_avg_100PEpMeV'][2] += depoL_100PEpMeV
-                self.info['L_depoList_avg_35PEpMeV'][2]  += depoL_35PEpMeV
+                self.info['L_depoList_avg_35PEpMeV'][2] += depoL_35PEpMeV
                 self.info['L_depoList_MBox_avg_220PEpMeV'][2] += depoL_MBox_220PEpMeV
                 self.info['L_depoList_MBox_avg_180PEpMeV'][2] += depoL_MBox_180PEpMeV
                 self.info['L_depoList_MBox_avg_140PEpMeV'][2] += depoL_MBox_140PEpMeV
                 self.info['L_depoList_MBox_avg_100PEpMeV'][2] += depoL_MBox_100PEpMeV
-                self.info['L_depoList_MBox_avg_35PEpMeV'][2]  += depoL_MBox_35PEpMeV
+                self.info['L_depoList_MBox_avg_35PEpMeV'][2] += depoL_MBox_35PEpMeV
                 self.info['N_parList'][2] += 1
-            elif (pdg in [211, -211]): #pi+/-
+            elif (pdg in [211, -211]):  # pi+/-
                 self.info['E_avail'] += (KE + mass)
                 self.info['E_availList'][3] += (KE + mass)
-                self.info['E_depoList'][3]       += depoE
+                self.info['E_depoList'][3] += depoE
                 self.info['E_depoList_track'][3] += depoE_track
-                self.info['Q_depoList'][3]                += depoQ
-                self.info['Q_depoList_th_75keV'][3]       += depoQ_75keV
-                self.info['Q_depoList_th_500keV'][3]      += depoQ_500keV
-                self.info['Q_depoList_dots_th_75keV'][3]  += depoQ_dots
-                self.info['Q_depoList_MBox'][3]           += depoQ_MBox
-                self.info['Q_depoList_MBox_th_75keV'][3]  += depoQ_MBox_75keV
+                self.info['Q_depoList'][3] += depoQ
+                self.info['Q_depoList_th_75keV'][3] += depoQ_75keV
+                self.info['Q_depoList_th_500keV'][3] += depoQ_500keV
+                self.info['Q_depoList_dots_th_75keV'][3] += depoQ_dots
+                self.info['Q_depoList_MBox'][3] += depoQ_MBox
+                self.info['Q_depoList_MBox_th_75keV'][3] += depoQ_MBox_75keV
                 self.info['Q_depoList_MBox_th_500keV'][3] += depoQ_MBox_500keV
                 self.info['L_depoList_avg_220PEpMeV'][3] += depoL_220PEpMeV
                 self.info['L_depoList_avg_180PEpMeV'][3] += depoL_180PEpMeV
                 self.info['L_depoList_avg_140PEpMeV'][3] += depoL_140PEpMeV
                 self.info['L_depoList_avg_100PEpMeV'][3] += depoL_100PEpMeV
-                self.info['L_depoList_avg_35PEpMeV'][3]  += depoL_35PEpMeV
+                self.info['L_depoList_avg_35PEpMeV'][3] += depoL_35PEpMeV
                 self.info['L_depoList_MBox_avg_220PEpMeV'][3] += depoL_MBox_220PEpMeV
                 self.info['L_depoList_MBox_avg_180PEpMeV'][3] += depoL_MBox_180PEpMeV
                 self.info['L_depoList_MBox_avg_140PEpMeV'][3] += depoL_MBox_140PEpMeV
                 self.info['L_depoList_MBox_avg_100PEpMeV'][3] += depoL_MBox_100PEpMeV
-                self.info['L_depoList_MBox_avg_35PEpMeV'][3]  += depoL_MBox_35PEpMeV
+                self.info['L_depoList_MBox_avg_35PEpMeV'][3] += depoL_MBox_35PEpMeV
                 self.info['N_parList'][3] += 1
-            elif (pdg == 111): #pi0
+            elif (pdg == 111):  # pi0
                 self.info['E_avail'] += (KE + mass)
                 self.info['E_availList'][4] += (KE + mass)
-                self.info['E_depoList'][4]       += depoE
+                self.info['E_depoList'][4] += depoE
                 self.info['E_depoList_track'][4] += depoE_track
-                self.info['Q_depoList'][4]                += depoQ
-                self.info['Q_depoList_th_75keV'][4]       += depoQ_75keV
-                self.info['Q_depoList_th_500keV'][4]      += depoQ_500keV
-                self.info['Q_depoList_dots_th_75keV'][4]  += depoQ_dots
-                self.info['Q_depoList_MBox'][4]           += depoQ_MBox
-                self.info['Q_depoList_MBox_th_75keV'][4]  += depoQ_MBox_75keV
+                self.info['Q_depoList'][4] += depoQ
+                self.info['Q_depoList_th_75keV'][4] += depoQ_75keV
+                self.info['Q_depoList_th_500keV'][4] += depoQ_500keV
+                self.info['Q_depoList_dots_th_75keV'][4] += depoQ_dots
+                self.info['Q_depoList_MBox'][4] += depoQ_MBox
+                self.info['Q_depoList_MBox_th_75keV'][4] += depoQ_MBox_75keV
                 self.info['Q_depoList_MBox_th_500keV'][4] += depoQ_MBox_500keV
                 self.info['L_depoList_avg_220PEpMeV'][4] += depoL_220PEpMeV
                 self.info['L_depoList_avg_180PEpMeV'][4] += depoL_180PEpMeV
                 self.info['L_depoList_avg_140PEpMeV'][4] += depoL_140PEpMeV
                 self.info['L_depoList_avg_100PEpMeV'][4] += depoL_100PEpMeV
-                self.info['L_depoList_avg_35PEpMeV'][4]  += depoL_35PEpMeV
+                self.info['L_depoList_avg_35PEpMeV'][4] += depoL_35PEpMeV
                 self.info['L_depoList_MBox_avg_220PEpMeV'][4] += depoL_MBox_220PEpMeV
                 self.info['L_depoList_MBox_avg_180PEpMeV'][4] += depoL_MBox_180PEpMeV
                 self.info['L_depoList_MBox_avg_140PEpMeV'][4] += depoL_MBox_140PEpMeV
                 self.info['L_depoList_MBox_avg_100PEpMeV'][4] += depoL_MBox_100PEpMeV
-                self.info['L_depoList_MBox_avg_35PEpMeV'][4]  += depoL_MBox_35PEpMeV
+                self.info['L_depoList_MBox_avg_35PEpMeV'][4] += depoL_MBox_35PEpMeV
                 self.info['N_parList'][4] += 1
-            elif (pdg == 22): #gamma
+            elif (pdg == 22):  # gamma
                 self.info['E_avail'] += (KE + mass)
                 self.info['E_availList'][5] += (KE + mass)
-                self.info['E_depoList'][5]       += depoE
+                self.info['E_depoList'][5] += depoE
                 self.info['E_depoList_track'][5] += depoE_track
-                self.info['Q_depoList'][5]                += depoQ
-                self.info['Q_depoList_th_75keV'][5]       += depoQ_75keV
-                self.info['Q_depoList_th_500keV'][5]      += depoQ_500keV
-                self.info['Q_depoList_dots_th_75keV'][5]  += depoQ_dots
-                self.info['Q_depoList_MBox'][5]           += depoQ_MBox
-                self.info['Q_depoList_MBox_th_75keV'][5]  += depoQ_MBox_75keV
+                self.info['Q_depoList'][5] += depoQ
+                self.info['Q_depoList_th_75keV'][5] += depoQ_75keV
+                self.info['Q_depoList_th_500keV'][5] += depoQ_500keV
+                self.info['Q_depoList_dots_th_75keV'][5] += depoQ_dots
+                self.info['Q_depoList_MBox'][5] += depoQ_MBox
+                self.info['Q_depoList_MBox_th_75keV'][5] += depoQ_MBox_75keV
                 self.info['Q_depoList_MBox_th_500keV'][5] += depoQ_MBox_500keV
                 self.info['L_depoList_avg_220PEpMeV'][5] += depoL_220PEpMeV
                 self.info['L_depoList_avg_180PEpMeV'][5] += depoL_180PEpMeV
@@ -579,53 +578,53 @@ class Event:
                 self.info['L_depoList_MBox_avg_180PEpMeV'][5] += depoL_MBox_180PEpMeV
                 self.info['L_depoList_MBox_avg_140PEpMeV'][5] += depoL_MBox_140PEpMeV
                 self.info['L_depoList_MBox_avg_100PEpMeV'][5] += depoL_MBox_100PEpMeV
-                self.info['L_depoList_MBox_avg_35PEpMeV'][5]  += depoL_MBox_35PEpMeV
+                self.info['L_depoList_MBox_avg_35PEpMeV'][5] += depoL_MBox_35PEpMeV
                 self.info['N_parList'][5] += 1
-            elif (pdg == 1000020040): #alpha
+            elif (pdg == 1000020040):  # alpha
                 self.info['E_avail'] += KE
                 self.info['E_availList'][6] += KE
-                self.info['E_depoList'][6]       += depoE
+                self.info['E_depoList'][6] += depoE
                 self.info['E_depoList_track'][6] += depoE_track
-                self.info['Q_depoList'][6]                += depoQ
-                self.info['Q_depoList_th_75keV'][6]       += depoQ_75keV
-                self.info['Q_depoList_th_500keV'][6]      += depoQ_500keV
-                self.info['Q_depoList_dots_th_75keV'][6]  += depoQ_dots
-                self.info['Q_depoList_MBox'][6]           += depoQ_MBox
-                self.info['Q_depoList_MBox_th_75keV'][6]  += depoQ_MBox_75keV
+                self.info['Q_depoList'][6] += depoQ
+                self.info['Q_depoList_th_75keV'][6] += depoQ_75keV
+                self.info['Q_depoList_th_500keV'][6] += depoQ_500keV
+                self.info['Q_depoList_dots_th_75keV'][6] += depoQ_dots
+                self.info['Q_depoList_MBox'][6] += depoQ_MBox
+                self.info['Q_depoList_MBox_th_75keV'][6] += depoQ_MBox_75keV
                 self.info['Q_depoList_MBox_th_500keV'][6] += depoQ_MBox_500keV
                 self.info['L_depoList_avg_220PEpMeV'][6] += depoL_220PEpMeV
                 self.info['L_depoList_avg_180PEpMeV'][6] += depoL_180PEpMeV
                 self.info['L_depoList_avg_140PEpMeV'][6] += depoL_140PEpMeV
                 self.info['L_depoList_avg_100PEpMeV'][6] += depoL_100PEpMeV
-                self.info['L_depoList_avg_35PEpMeV'][6]  += depoL_35PEpMeV
+                self.info['L_depoList_avg_35PEpMeV'][6] += depoL_35PEpMeV
                 self.info['L_depoList_MBox_avg_220PEpMeV'][6] += depoL_MBox_220PEpMeV
                 self.info['L_depoList_MBox_avg_180PEpMeV'][6] += depoL_MBox_180PEpMeV
                 self.info['L_depoList_MBox_avg_140PEpMeV'][6] += depoL_MBox_140PEpMeV
                 self.info['L_depoList_MBox_avg_100PEpMeV'][6] += depoL_MBox_100PEpMeV
-                self.info['L_depoList_MBox_avg_35PEpMeV'][6]  += depoL_MBox_35PEpMeV
+                self.info['L_depoList_MBox_avg_35PEpMeV'][6] += depoL_MBox_35PEpMeV
                 self.info['N_parList'][6] += 1
             else:
                 self.info['E_avail'] += KE
                 self.info['E_availList'][7] += KE
-                self.info['E_depoList'][7]       += depoE
+                self.info['E_depoList'][7] += depoE
                 self.info['E_depoList_track'][7] += depoE_track
-                self.info['Q_depoList'][7]                += depoQ
-                self.info['Q_depoList_th_75keV'][7]       += depoQ_75keV
-                self.info['Q_depoList_th_500keV'][7]      += depoQ_500keV
-                self.info['Q_depoList_dots_th_75keV'][7]  += depoQ_dots
-                self.info['Q_depoList_MBox'][7]           += depoQ_MBox
-                self.info['Q_depoList_MBox_th_75keV'][7]  += depoQ_MBox_75keV
+                self.info['Q_depoList'][7] += depoQ
+                self.info['Q_depoList_th_75keV'][7] += depoQ_75keV
+                self.info['Q_depoList_th_500keV'][7] += depoQ_500keV
+                self.info['Q_depoList_dots_th_75keV'][7] += depoQ_dots
+                self.info['Q_depoList_MBox'][7] += depoQ_MBox
+                self.info['Q_depoList_MBox_th_75keV'][7] += depoQ_MBox_75keV
                 self.info['Q_depoList_MBox_th_500keV'][7] += depoQ_MBox_500keV
                 self.info['L_depoList_avg_220PEpMeV'][7] += depoL_220PEpMeV
                 self.info['L_depoList_avg_180PEpMeV'][7] += depoL_180PEpMeV
                 self.info['L_depoList_avg_140PEpMeV'][7] += depoL_140PEpMeV
                 self.info['L_depoList_avg_100PEpMeV'][7] += depoL_100PEpMeV
-                self.info['L_depoList_avg_35PEpMeV'][7]  += depoL_35PEpMeV
+                self.info['L_depoList_avg_35PEpMeV'][7] += depoL_35PEpMeV
                 self.info['L_depoList_MBox_avg_220PEpMeV'][7] += depoL_MBox_220PEpMeV
                 self.info['L_depoList_MBox_avg_180PEpMeV'][7] += depoL_MBox_180PEpMeV
                 self.info['L_depoList_MBox_avg_140PEpMeV'][7] += depoL_MBox_140PEpMeV
                 self.info['L_depoList_MBox_avg_100PEpMeV'][7] += depoL_MBox_100PEpMeV
-                self.info['L_depoList_MBox_avg_35PEpMeV'][7]  += depoL_MBox_35PEpMeV
+                self.info['L_depoList_MBox_avg_35PEpMeV'][7] += depoL_MBox_35PEpMeV
                 self.info['N_parList'][7] += 1
 
         # for track in self.tracks:
@@ -643,8 +642,9 @@ class Event:
         #         self.info['E_depoList'][4] += depoE
         #     else:
         #         self.info['E_depoList'][5] += depoE
-    #this is a primary function i design to find the ancester, but i think there are easier way of doing so
-    def loopover(self,pdg,track):
+
+    # this is a primary function i design to find the ancester, but i think there are easier way of doing so
+    def loopover(self, pdg, track):
         while pdg != 2112:
             ParentId = track.GetParentId()
             track = self.tracks[ParentId]
@@ -652,16 +652,17 @@ class Event:
             # Break out of the loop if there is no parent (ParentId == -1)
             if ParentId == -1:
                 break
-        return pdg,track
+        return pdg, track
 
     def PrintTracksEnergy(self):
         # Loop over all tracks
-        switch=0
+        switch = 0
         for i in range(self.tracks.size):
             track = self.tracks[i]
             pdg_original = track.GetPDGCode()
             pdg = track.GetPDGCode()  # Get the PDG code of the particle
             track_energy = track.energy.get('depoTotal', 0)
+
             # Trace back to the parent particle until we find a neutron (PDG code 2112)
             pdg, track = self.loopover(pdg, track)
             ParentId = track.GetParentId()
@@ -670,13 +671,13 @@ class Event:
                 pdg = track.GetPDGCode()
                 pdg, track = self.loopover(pdg, track)
                 ParentId = track.GetParentId()
-            if pdg == 2112 and ParentId == -1 :
+            if pdg == 2112 and ParentId == -1:
                 # Instead of printing, store the tuple (or you can use a dict)
-                switch=1
-               # results.append(\n)
+                switch = 1
+            # results.append(\n)
         return switch
 
-    #for now this function is totally useless because we are still wondering if neutron can deposit a lot of energy
+    # for now this function is totally useless because we are still wondering if neutron can deposit a lot of energy
     def PrintTracksEnergy_ignoreneutron(self):
         results = []  # Initialize an empty list
         # Loop over all tracks
@@ -693,22 +694,21 @@ class Event:
                 pdg = track.GetPDGCode()
                 pdg, track = self.loopover(pdg, track)
                 ParentId = track.GetParentId()
-            if pdg == 2112 and ParentId == -1 and track_energy>0.5 and pdg_original!=2112:
+            if pdg == 2112 and ParentId == -1 and track_energy > 0.5 and pdg_original != 2112:
                 # Instead of printing, store the tuple (or you can use a dict)
-                results_new.append(("(ignore neutron the particle is:",pdg_original,"ignore nuetron the energy it deposit is:" ,track_energy))
-               # results.append(\n)
+                results_new.append(("(ignore neutron the particle is:", pdg_original,
+                                    "ignore nuetron the energy it deposit is:", track_energy))
+            # results.append(\n)
         print(results_new)
         return results_new
-    
 
-
-    #select those tracks with neutron as ancester, we can use this function in antinumu samples because we assume hase on 
-    #energy deposit topology we are always able to find those edep which belongs to neutron
+    # select those tracks with neutron as ancester, we can use this function in antinumu samples because we assume hase on
+    # energy deposit topology we are always able to find those edep which belongs to neutron
     #
     def select_the_right_track(self):
         results = []  # Initialize an empty list
         # Loop over all tracks
-        right_track=[]
+        right_track = []
         for i in range(self.tracks.size):
             track = self.tracks[i]
             for point in track.Points:
@@ -727,18 +727,14 @@ class Event:
                 pdg = track.GetPDGCode()
                 pdg, track = self.loopover(pdg, track)
                 ParentId = track.GetParentId()
-            if pdg == 2112 and ParentId == -1 and track_energy>0.5:
+            if pdg == 2112 and ParentId == -1 and track_energy > 0.5:
                 # Instead of printing, store the tuple (or you can use a dict)
-                results.append((pdg_original,x,y,z,t))
+                results.append((pdg_original, x, y, z, t))
                 right_track.append(i)
-               # results.append(\n)
-        print(results)
-       #print(right_track)
+            # results.append(\n)
+        #print(results)
+        # print(right_track)
         return right_track
-
-
-
-
 
     def PrintDepo(self, i):
         # print(f"{self.depos.size} depo points stored in total")
@@ -748,32 +744,33 @@ class Event:
         edep = depo.GetEnergyDeposit()
         # edepSecond = depo.GetSecondaryDeposit()
         trkLength = depo.GetTrackLength()
-        print(contrib, "%6d %.2f %.2f" %(primaryId, edep, trkLength))
+        print(contrib, "%6d %.2f %.2f" % (primaryId, edep, trkLength))
 
     # ------------------------
     def PrintTrack(self, trkId):
-        self.PrintTracks(trkId, trkId+1)
+        self.PrintTracks(trkId, trkId + 1)
         track = self.tracks[trkId]
         children = track.association['children']
-        #print(f'children: {children}')
+        # print(f'children: {children}')
         for childId in children:
             child = self.tracks[childId]
             name = child.GetName()
             mom = child.GetInitialMomentum()
             KE = mom.E() - mom.M()
-            #print(f"{childId} {name}: {KE:.2f} MeV, {child.energy['depoTotal']:.2f} MeV, {child.association['children']}")
+            # print(f"{childId} {name}: {KE:.2f} MeV, {child.energy['depoTotal']:.2f} MeV, {child.association['children']}")
 
-        #print(f"{track.Points.size()} points stored in track {trkId}")
+        # print(f"{track.Points.size()} points stored in track {trkId}")
         for point in track.Points:
             x = point.GetPosition().X()
             y = point.GetPosition().Y()
             z = point.GetPosition().Z()
             t = point.GetPosition().T()
-            #print(f"{point.GetProcess()}, {point.GetSubprocess()}, {x}, {y}, {z}, {t}")
+            # print(f"{point.GetProcess()}, {point.GetSubprocess()}, {x}, {y}, {z}, {t}")
 
-        #print(f"{point.GetProcess()}, {point.GetSubprocess()}, {x}, {y}, {z}, {t}")
-        return t # last point is capture time
-    def reorder_by_time(self,coordinates):
+        # print(f"{point.GetProcess()}, {point.GetSubprocess()}, {x}, {y}, {z}, {t}")
+        return t  # last point is capture time
+
+    def reorder_by_time(self, coordinates):
         """
         Reorders a list of coordinate sets based on the time (t) component.
         Each coordinate is expected to be a list or tuple in the form [x, y, z, t].
@@ -786,9 +783,10 @@ class Event:
         """
         # Sort by the time component (assumed to be the 4th element, index 3)
         return sorted(coordinates, key=lambda point: point[3])
+
     # ------------------------
     def PrintTracks(self, start=0, stop=-1):
-        #print(f"{self.tracks.size} trajectories stored", )
+        # print(f"{self.tracks.size} trajectories stored", )
 
         #print(f"{'pdg':>8}{'name':>8}{'trkId':>6}{'parId':>6}{'acId':>6}{'KE':>10}{'selfDepo':>10}{'allDepo':>10}")
         #print(f"{'':>8}{'':>8}{'':>6}{'':>6}{'':>6}{'[MeV]':>10}{'[MeV]':>10}{'[MeV]':>10}")
@@ -796,58 +794,26 @@ class Event:
 
         neutrontrkId = -1
         neutronKE = -1
-        numbers=self.select_the_right_track()
-        for track in self.tracks[numbers]:
+
+        for track in self.tracks[start:stop]:
             pdg = track.GetPDGCode()
-            #print("the particle is:",pdg)
             name = track.GetName()
             trkId = track.GetTrackId()
             parId = track.GetParentId()
             mom = track.GetInitialMomentum()
-            # print("the momentum is :",mom)
-            px = track.GetInitialMomentum().X()
-            py = track.GetInitialMomentum().Y()
-            pz = track.GetInitialMomentum().Z()
-            pE = track.GetInitialMomentum().E()
-            pM = track.GetInitialMomentum().M()
-            coordinate=[]
-            for point in track.Points:
-               x = point.GetPosition().X()
-               y = point.GetPosition().Y()
-               z = point.GetPosition().Z()
-               t = point.GetPosition().T()
-            coordinate.append([x, y, z, t])
-        
-            
-            #print("the x,y,z,t coordinate of the track:",x,y,z,t)
-            #print("the 3 momentum are:",px,py,pz,"the energy is:",pE,"the mass is:",pM,)
             mass = mom.M()
             KE = mom.E() - mass
-            #print("the kenitic energy is: ",KE)
-            p_square=(px**2+py**2+pz**2)**0.5
-            direction_vector=[]
-            direction_vector.append(px/p_square)
-            direction_vector.append(py/p_square)
-            direction_vector.append(pz/p_square)
-            #if KE>=2:
-            #    print(direction_vector)
-            #else:
-            #    print("direction undetermined")
             ancestor = track.association['ancestor']
             selfDepo = track.energy['depoTotal']
             allDepo = self.GetEnergyDepoWithDesendents(trkId)
-            #print(f"{pdg:>8d}{name:>8s}{trkId:>6d}{parId:>6d}{ancestor:>6d}{KE:>10.2f}{selfDepo:>10.2f}{allDepo:>10.2f}")
+           #print(f"{pdg:>8d}{name:>8s}{trkId:>6d}{parId:>6d}{ancestor:>6d}{KE:>10.2f}{selfDepo:>10.2f}{allDepo:>10.2f}")
             # Take the last neutron and check its KE and capture time
             if pdg == 2112:
                 neutrontrkId = trkId
                 neutronKE = KE
-        
+
         #print('-'*(8+8+6+6+6+10+10+10))
         return [neutrontrkId, neutronKE]
-
-
-
-
 
     def cos_theta(self):
         trig = self.selectneutronevent()
@@ -855,87 +821,197 @@ class Event:
             return None
         reconstructed_direction = self.reconstructed_direction()
         true_direction = self.read_neutron_direction()
-        
-        if (reconstructed_direction is None or true_direction is None or 
-    np.allclose(np.array(reconstructed_direction), [0.0, 0.0, 0.0]) or 
-    np.allclose(np.array(true_direction), [0.0, 0.0, 0.0])):
 
+        if (reconstructed_direction is None or true_direction is None or
+                np.allclose(np.array(reconstructed_direction), [0.0, 0.0, 0.0]) or
+                np.allclose(np.array(true_direction), [0.0, 0.0, 0.0])):
             print("invalidate direction information")
             return None
-        cos_between = np.dot(reconstructed_direction, true_direction) 
+        cos_between = np.dot(reconstructed_direction, true_direction)
         print("cos_theta is: ", cos_between)
         return cos_between
 
-    def edep_based_information(self)
-        information=[]
-        trig = self.selectneutronevent()
-        mm2cm=0.1
-        if trig == 1:
-            for i in range(self.tracks.size):
-                track_origin = self.tracks[i]
-                track= self.tracks[i]
-                pdg_original = track.GetPDGCode()
-                pdg = track.GetPDGCode()  # Get the PDG code of the particle
-                track_energy = track.energy.get('depoTotal', 0)
-                # Trace back to the parent particle until we find a neutron (PDG code 2112)
-                pdg, track = self.loopover(pdg, track)
-                ParentId = track.GetParentId()
-                while pdg == 2112 and ParentId != -1:
-                    track = self.tracks[ParentId]
-                    pdg = track.GetPDGCode()
-                    pdg, track = self.loopover(pdg, track)
-                    ParentId = track.GetParentId()
-                if pdg == 2112 and ParentId == -1 :
-                    depoList = track_origin.association['depoList']
-                    for di in depoList:
-                        if di < 0 or di >= len(self.depos):
-                            continue  # 防止越界
+    def edep_based_information(self, threshold=0.5):
+        """
+        For each daughter track whose ultimate ancestor is a neutron (PDG 2112),
+        assemble [x, y, z, edep, angle] for every deposition above the given threshold,
+        sampling from the exact same points as reconstructing_direction().
+        """
+        info = []
+        if self.selectneutronevent() != 1:
+            return info
 
-                        depo = self.depos[di]
-                        x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2cm
-                        y = (depo.GetStart().Y() + depo.GetStop().Y()) / 2 * mm2cm
-                        z = (depo.GetStart().Z() + depo.GetStop().Z()) / 2 * mm2cm
-                        t = (depo.GetStart().T() + depo.GetStop().T()) / 2  # ns
-                        edep = depo.GetEnergyDeposit()  # MeV
-        
-   #here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
+        mm2cm = 0.1
+        neutron_dir = self.read_neutron_direction()
+
+        # Loop over the *original* tracks (track_origin) just like in reconstructing_direction
+        for i in range(self.tracks.size):
+            track_origin = self.tracks[i]
+            # Trace back to find its neutron ancestor
+            pdg, track = self.loopover(track_origin.GetPDGCode(), track_origin)
+            anc_idx = track.association.get('ancestor')
+            if anc_idx is None or anc_idx >= len(self.tracks):
+                continue
+            if self.tracks[anc_idx].GetPDGCode() != 2112:
+                continue
+
+            # Now sample exactly the same depoList as reconstructing_direction
+            for di in track_origin.association.get('depoList', []):
+                if not (0 <= di < len(self.depos)):
+                    continue
+                depo = self.depos[di]
+                edep = depo.GetEnergyDeposit()
+                if edep < threshold:
+                    continue
+
+                # Compute midpoint in cm
+                start, stop = depo.GetStart(), depo.GetStop()
+                midpoint = np.array([
+                    (start.X() + stop.X()) / 2 * mm2cm,
+                    (start.Y() + stop.Y()) / 2 * mm2cm,
+                    (start.Z() + stop.Z()) / 2 * mm2cm
+                ])
+                midpointlength = np.linalg.norm(midpoint)
+                # Compute angle to true neutron direction
+                angle = self.compute_angle_between(neutron_dir, midpoint)
+                info.append([midpointlength, edep, angle])
+
+        return info
+    def coneexclusion(self,angle_deviation,michel_electron):
+        mm2cm=0.1
+        #print("the croordinates of the neutron edep that above the threshold are:", edep_array)
+        coordinate=[]
+        #import all the energy deposition point in one event, the (x,y,z,t,edep)arrays
+        muon_direction=self.read_muon_direction()
+        muon_direction=np.array(muon_direction)
+        muon_direction=np.linalg.norm(muon_direction)
+
+
+        for i in range(self.tracks.size):
+            ########read every edep, and compare if all from neutron
+            track_origin = self.tracks[i]
+            depoList = track_origin.association['depoList']
+            for di in depoList:
+                if di < 0 or di >= len(self.depos):
+                    continue  # 防止越界
+                depo = self.depos[di]
+                x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2cm
+                y = (depo.GetStart().Y() + depo.GetStop().Y()) / 2 * mm2cm
+                z = (depo.GetStart().Z() + depo.GetStop().Z()) / 2 * mm2cm
+                t = (depo.GetStart().T() + depo.GetStop().T()) / 2  # ns
+                edep = depo.GetEnergyDeposit()  # MeV
+                real_direction=np.array([x,y,z])
+                real_direction=np.linalg.norm(real_direction)
+                angle_difference=np.arccos(np.clip(np.dot(real_direction,muon_direction), -1.0, 1.0))
+                angle_difference=abs(np.degrees(angle_difference))
+                print("the half cone angle is :", angle_difference)
+                if edep >= 0.5 and angle_difference >angle_deviation:
+                    coordinate.append([0.0, x, y, z, t, edep])
+            return coordinate
+        #read the muon direction, or the electron direction
+
+        #exclude the arrays within the cone
+
+
+
+
+
+
+
+
+
+    # here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
     def reconstructing_direction(self, start=0, stop=-1):
         coordinate = []
         trig = self.selectneutronevent()
-        mm2cm=0.1
+        #print("the trig is :", trig)
+        mm2cm = 0.1
         if trig == 1:
             for i in range(self.tracks.size):
                 track_origin = self.tracks[i]
-                track= self.tracks[i]
-                pdg_original = track.GetPDGCode()
+                track = self.tracks[i]
                 pdg = track.GetPDGCode()  # Get the PDG code of the particle
-                track_energy = track.energy.get('depoTotal', 0)
                 # Trace back to the parent particle until we find a neutron (PDG code 2112)
                 pdg, track = self.loopover(pdg, track)
-                ParentId = track.GetParentId()
-                while pdg == 2112 and ParentId != -1:
-                    track = self.tracks[ParentId]
-                    pdg = track.GetPDGCode()
-                    pdg, track = self.loopover(pdg, track)
-                    ParentId = track.GetParentId()
-                if pdg == 2112 and ParentId == -1 :
+                ancestor = track.association['ancestor']
+                pdg_check = self.tracks[ancestor].GetPDGCode()
+                if pdg_check == 2112 :
+                    #print("there are something here!")
                     depoList = track_origin.association['depoList']
                     for di in depoList:
                         if di < 0 or di >= len(self.depos):
                             continue  # 防止越界
-
                         depo = self.depos[di]
                         x = (depo.GetStart().X() + depo.GetStop().X()) / 2 * mm2cm
                         y = (depo.GetStart().Y() + depo.GetStop().Y()) / 2 * mm2cm
                         z = (depo.GetStart().Z() + depo.GetStop().Z()) / 2 * mm2cm
                         t = (depo.GetStart().T() + depo.GetStop().T()) / 2  # ns
                         edep = depo.GetEnergyDeposit()  # MeV
-                        l = depo.GetTrackLength() * mm2cm
-
                         if edep >= 0.5:
                             coordinate.append([0.0, x, y, z, t, edep])
-        #print(coordinate)
+        # print(coordinate)
         return coordinate
+
+    def compute_angle_between(self, u: np.ndarray, v: np.ndarray) -> float:
+        """
+        Return arccos(u·v) in radians, or 0 if the inputs are None, zero-length,
+        or the dot falls outside [-1,1].
+        """
+        # 1) catch missing vectors right away
+        if u is None or v is None:
+            return 0.0
+
+        # 2) coerce to arrays (in case someone passed a list)
+        u = np.asarray(u)
+        v = np.asarray(v)
+
+        # 3) guard zero-length
+        nu = np.linalg.norm(u)
+        nv = np.linalg.norm(v)
+        if nu == 0 or nv == 0:
+            return 0.0
+
+        # 4) safe dot and clamp
+        dot = np.dot(u, v) / (nu * nv)
+        dot = max(min(dot, 1.0), -1.0)
+
+        # 5) final angle
+        return np.arccos(dot)
+    #here we write another angle comparison, between the real neutron direction and a direction pointing from neutrino vertex to individual edep
+    def edep_angle_difference(self) -> float:
+        """
+        Find the *first* >0.5 MeV depos by a neutron and return the angle
+        between its direction and the neutron's. 0 if none or on error.
+        """
+        neutron_dir = self.read_neutron_direction()
+        mm2cm = 0.1
+
+        for track in self.tracks:
+            if self.tracks[track.association['ancestor']].GetPDGCode() != 2112:
+                continue
+
+            for di in track.association['depoList']:
+                if not (0 <= di < len(self.depos)):
+                    continue
+                depo = self.depos[di]
+                edep = depo.GetEnergyDeposit()
+                if edep < 0.5:
+                    continue
+
+                # midpoint in cm
+                start, stop = depo.GetStart(), depo.GetStop()
+                midpoint = np.array([
+                    (start.X() + stop.X()) / 2 * mm2cm,
+                    (start.Y() + stop.Y()) / 2 * mm2cm,
+                    (start.Z() + stop.Z()) / 2 * mm2cm
+                ])
+
+                # we have our two vectors – compute and return
+                return self.compute_angle_between(neutron_dir, midpoint)
+
+        # no valid deposit found
+        return 0.0
+
     def reconstructed_direction(self):
         """
         Calculate the reconstructed direction vector based on data from simulating_direction().
@@ -947,7 +1023,7 @@ class Event:
         if not data:
             print("No data from reconstructing_direction(), returning None.")
             return None
-    
+
         weighted_vectors = []
         for pt in data:
             try:
@@ -958,7 +1034,7 @@ class Event:
             vector = (-pt[1] * weight, -pt[2] * weight, -pt[3] * weight)
             weighted_vectors.append(vector)
 
-    # Sum the weighted vectors component-wise
+        # Sum the weighted vectors component-wise
         sum_vector = [sum(vec[i] for vec in weighted_vectors) for i in range(3)]
         norm = math.sqrt(sum(sum_component ** 2 for sum_component in sum_vector))
         if norm == 0:
@@ -966,66 +1042,157 @@ class Event:
             return None
         unit_vector = [x / norm for x in sum_vector]
         return unit_vector
-    
 
-        
-    
-    
+
+
     def selectneutronevent(self):
         trig = 0
         for i in range(self.tracks.size):
             track = self.tracks[i]
-            pdg_original = track.GetPDGCode()
             pdg = track.GetPDGCode()  # Get the PDG code of the particle
-            track_energy = track.energy.get('depoTotal', 0)
-            # Trace back to the parent particle until we find a neutron (PDG code 2112)
             ParentId = track.GetParentId()
-            if pdg == 2112 and ParentId == -1:
-                trig+=1
-        if trig==1:
-            print("this",self.currentEntry,"th event has one neutron neutrino interaction, it is a good event")
-        elif trig!=0 and trig!=1:
-            print("this",self.currentEntry,"th event has",trig,"neutron neutrino interaction, it is a BAD event")
+            if pdg  ==2112 and ParentId == -1:
+                trig += 1
         return trig
 
+
+    def selectmuonevent(self):
+        trig = 0
+        for i in range(self.tracks.size):
+            track = self.tracks[i]
+            pdg = track.GetPDGCode()  # Get the PDG code of the particle
+            ParentId = track.GetParentId()
+            if pdg  in (13,-13) and ParentId == -1:
+                trig += 1
+
+        ##if trig == 1:
+        #    print("this", self.currentEntry, "th event has one neutron neutrino interaction, it is a good event")
+        #elif trig != 0 and trig != 1:
+        #    print("this", self.currentEntry, "th event has", trig, "neutron neutrino interaction, it is a BAD event")
+        print(trig,"is trig")
+        return trig
     # ----------------------
-    def read_neutron_direction(self):
-        direction_vector=[]
-        trig=self.selectneutronevent()
-        if trig!=1:
-            print("this event does not have one neutron neutrino interaction")
-            return
-        else:
-            print("this event has neutron neutrino interaction")
-            i=0
+    def read_muon_direction(self):
+        direction_vector = []
+        trig=self.selectmuonevent()
+        if trig == 1:
+            i = 0
             track = self.tracks[i]
             parId = track.GetParentId()
             pdg_original = track.GetPDGCode()
-            while parId !=-1 or pdg_original != 2112:
-                i+=1
-                track=self.tracks[i]
+
+            while parId != -1 or pdg_original not in (-13,13):
+                i += 1
+                track = self.tracks[i]
                 parId = track.GetParentId()
-                pdg_original=track.GetPDGCode()
-        
+                pdg_original = track.GetPDGCode()
+
             px = track.GetInitialMomentum().X()
             py = track.GetInitialMomentum().Y()
             pz = track.GetInitialMomentum().Z()
             pE = track.GetInitialMomentum().E()
             pM = track.GetInitialMomentum().M()
             p_square = (px ** 2 + py ** 2 + pz ** 2) ** 0.5
-            if p_square==0.0:
-                direction_vector = np.array([0.0,0.0,0.0])
+            if p_square == 0.0:
+                direction_vector = np.array([0.0, 0.0, 0.0])
             else:
                 direction_vector.append(px / p_square)
                 direction_vector.append(py / p_square)
                 direction_vector.append(pz / p_square)
                 direction_vector = np.array(direction_vector)
-        #print("the direction of the neutron:",direction_vector) 
+            print("the direction of the muon:",direction_vector)
+            return direction_vector
+        else:
+            print("the primary vertex does not have one muon coming out")
+            return None
+    def read_neutron_direction(self):
+        direction_vector = []
+        trig = self.selectneutronevent()
+        if trig != 1:
+        #    print("this event does not have one neutron neutrino interaction")
+            return
+        else:
+            print("this event has neutron neutrino interaction")
+            i = 0
+            track = self.tracks[i]
+            parId = track.GetParentId()
+            pdg_original = track.GetPDGCode()
+            while parId != -1 or pdg_original != 2112:
+                i += 1
+                track = self.tracks[i]
+                parId = track.GetParentId()
+                pdg_original = track.GetPDGCode()
+
+            px = track.GetInitialMomentum().X()
+            py = track.GetInitialMomentum().Y()
+            pz = track.GetInitialMomentum().Z()
+            p_square = (px ** 2 + py ** 2 + pz ** 2) ** 0.5
+            if p_square == 0.0:
+                direction_vector = np.array([0.0, 0.0, 0.0])
+            else:
+                direction_vector.append(px / p_square)
+                direction_vector.append(py / p_square)
+                direction_vector.append(pz / p_square)
+                direction_vector = np.array(direction_vector)
+        print("the direction of the neutron:",direction_vector)
+
         return direction_vector
 
 
+    #read the direction of a muon, exactly the same as neutron
+    def read_muon_direction(self):
+        direction_vector = []
+        trig = self.selectmuonevent()
+        if trig != 1:
+        #    print("this event does not have one neutron neutrino interaction")
+            return
+        else:
+            print("this event has muon neutrino interaction")
+            i = 0
+            track = self.tracks[i]
+            parId = track.GetParentId()
+            pdg_original = track.GetPDGCode()
+            while parId != -1 or pdg_original not in (-13,13):
+                i += 1
+                track = self.tracks[i]
+                parId = track.GetParentId()
+                pdg_original = track.GetPDGCode()
+
+            px = track.GetInitialMomentum().X()
+            py = track.GetInitialMomentum().Y()
+            pz = track.GetInitialMomentum().Z()
+            p_square = (px ** 2 + py ** 2 + pz ** 2) ** 0.5
+            if p_square == 0.0:
+                direction_vector = np.array([0.0, 0.0, 0.0])
+            else:
+                direction_vector.append(px / p_square)
+                direction_vector.append(py / p_square)
+                direction_vector.append(pz / p_square)
+                direction_vector = np.array(direction_vector)
+        print("the direction of the muon:",direction_vector)
+
+        return direction_vector
+
+
+
+
+    def selectmuonneutronevent(self,nevent):
+        self.Jump(nevent)
+        trig = 0
+        for i in range(self.tracks.size):
+            track = self.tracks[i]
+            pdg = track.GetPDGCode()  # Get the PDG code of the particle
+            ParentId = track.GetParentId()
+            if ParentId == -1 and pdg not in [2112, 13, -13]:
+                trig =1
+            ##if trig == 1:
+            #    print("this", self.currentEntry, "th event has one neutron neutrino interaction, it is a good event")
+            # elif trig != 0 and trig != 1:
+            #    print("this", self.currentEntry, "th event has", trig, "neutron neutrino interaction, it is a BAD event")
+        return trig
+
     def Next(self):
-        if self.currentEntry != self.nEntry -1:
+        if self.currentEntry != self.nEntry - 1:
             self.currentEntry += 1
         else:
             self.currentEntry = 0
@@ -1036,10 +1203,10 @@ class Event:
         if self.currentEntry != 0:
             self.currentEntry -= 1
         else:
-            self.currentEntry = self.nEntry -1
+            self.currentEntry = self.nEntry - 1
         self.Jump(self.currentEntry)
 
-    #-------------------------
+    # -------------------------
     def GetEnergyDepoWithDesendents(self, trkId):
         track = self.tracks[trkId]
         energy = track.energy['depoTotal']
@@ -1048,7 +1215,7 @@ class Event:
             energy += self.GetEnergyDepoWithDesendents(childId)
         return energy
 
-    #-------------------------
+    # -------------------------
     def GetChargeDepoWithDesendents(self, trkId):
         track = self.tracks[trkId]
         charge = track.energy['depoTotal_charge']
@@ -1061,7 +1228,7 @@ class Event:
             charge_500keV += self.GetChargeDepoWithDesendents(childId)[2]
         return [charge, charge_75keV, charge_500keV]
 
-    #-------------------------
+    # -------------------------
     def GetChargeMBoxDepoWithDesendents(self, trkId):
         track = self.tracks[trkId]
         charge = track.energy['depoTotal_charge_MBox']
@@ -1074,7 +1241,7 @@ class Event:
             charge_500keV += self.GetChargeMBoxDepoWithDesendents(childId)[2]
         return [charge, charge_75keV, charge_500keV]
 
-    #-------------------------
+    # -------------------------
     def GetLightDepoWithDesendents(self, trkId):
         track = self.tracks[trkId]
         light_avg_220PEpMeV = track.energy['depoTotal_light_avg_220PEpMeV']
@@ -1088,27 +1255,27 @@ class Event:
             light_avg_180PEpMeV += self.GetLightDepoWithDesendents(childId)[1]
             light_avg_140PEpMeV += self.GetLightDepoWithDesendents(childId)[2]
             light_avg_100PEpMeV += self.GetLightDepoWithDesendents(childId)[3]
-            light_avg_35PEpMeV  += self.GetLightDepoWithDesendents(childId)[4]
+            light_avg_35PEpMeV += self.GetLightDepoWithDesendents(childId)[4]
         return [light_avg_220PEpMeV, light_avg_180PEpMeV, light_avg_140PEpMeV, light_avg_100PEpMeV, light_avg_35PEpMeV]
 
-    #-------------------------
+    # -------------------------
     def GetLightMBoxDepoWithDesendents(self, trkId):
         track = self.tracks[trkId]
         light_avg_220PEpMeV = track.energy['depoTotal_light_avg_220PEpMeV_MBox']
         light_avg_180PEpMeV = track.energy['depoTotal_light_avg_180PEpMeV_MBox']
         light_avg_140PEpMeV = track.energy['depoTotal_light_avg_140PEpMeV_MBox']
         light_avg_100PEpMeV = track.energy['depoTotal_light_avg_100PEpMeV_MBox']
-        light_avg_35PEpMeV  = track.energy['depoTotal_light_avg_35PEpMeV_MBox']
+        light_avg_35PEpMeV = track.energy['depoTotal_light_avg_35PEpMeV_MBox']
         children = track.association['children']
         for childId in children:
             light_avg_220PEpMeV += self.GetLightMBoxDepoWithDesendents(childId)[0]
             light_avg_180PEpMeV += self.GetLightMBoxDepoWithDesendents(childId)[1]
             light_avg_140PEpMeV += self.GetLightMBoxDepoWithDesendents(childId)[2]
             light_avg_100PEpMeV += self.GetLightMBoxDepoWithDesendents(childId)[3]
-            light_avg_35PEpMeV  += self.GetLightMBoxDepoWithDesendents(childId)[4]
+            light_avg_35PEpMeV += self.GetLightMBoxDepoWithDesendents(childId)[4]
         return [light_avg_220PEpMeV, light_avg_180PEpMeV, light_avg_140PEpMeV, light_avg_100PEpMeV, light_avg_35PEpMeV]
 
-    #-------------------------
+    # -------------------------
     """def GetEnergyDepoWithAncestor(self, acId):
         energy = 0
         for track in self.tracks:
@@ -1117,7 +1284,7 @@ class Event:
                 energy += track.energy['depoTotal']
         return energy"""
 
-    #-----------------------
+    # -----------------------
     def GetEnuFromFileName(self):
         # This is used for Marley low energy files
         # No need for Genie, can read from gRooTracker tree directly
@@ -1126,7 +1293,7 @@ class Event:
         filename = filename.replace('MeV', '')
         return float(filename)  # Marley file names already in MeV
 
-    #-----------------------
+    # -----------------------
     def GetnuPDGFromFileName(self):
         # This is used for Marley low energy files
         # No need for Genie, can read from gRooTracker tree directly
@@ -1134,10 +1301,10 @@ class Event:
         filename = filename.split('_')[-3]
         return filename
 
-    #-----------------------
+    # -----------------------
     def GetFileName(self):
         return self.simTree.GetFile().GetName()
-   
+
     def GetDepoInformation_all_events(self):
         """
         Returns a list of track lengths (in centimeters) for deposits across all events.
@@ -1153,12 +1320,13 @@ class Event:
                 all_track_lengths.append(trkLength)
         return all_track_lengths
 
+
 # ------------------------
 if __name__ == "__main__":
     event = Event(sys.argv[1])
-    #event.Jump(0)
-    #event.PrintVertex()
-    #event.Next()
-    #event.PrintVertex()
-    #event.PrintTracks(0,8)
+    # event.Jump(0)
+    # event.PrintVertex()
+    # event.Next()
+    # event.PrintVertex()
+    # event.PrintTracks(0,8)
     # event.PrintTrack(1)
