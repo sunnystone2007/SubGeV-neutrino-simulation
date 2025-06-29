@@ -1,8 +1,6 @@
 from xml.sax import parse
-
 import ROOT
 from ROOT import TG4Event, TFile, TChain
-
 import sys, os
 import numpy as np
 import random
@@ -11,12 +9,12 @@ import math
 
 class Event:
 
+
     def __init__(self, fileName, evgen='Genie'):
-        print("event: initilization")
+        print("event: initialization")
         self.fileName = fileName
         self.evgen = evgen
         self.ReadTree()
-
         self.currentEntry = 0
         # create a folder to store plots
         self.plotpath = "./plots"
@@ -57,16 +55,14 @@ class Event:
 
         self.currentEntry = entryNo
         self.simTree.GetEntry(entryNo)
-
         self.ReadVertex()
         self.ReadTracks()
         self.ReadEnergyDepo('SimEnergyDeposit')
         # self.PrintVertex
         # self.PrintTracksEnergy()
-        # self.PrintTracksEnergy_ignoreneutron
-        # self.selectneutronevent()
+        # self.SelectNeutronEvent()
         # self.PrintTracks
-        # self.read_neutron_direction
+        # self.read_neutron_direction()
 
         self.info = {}
         self.info['Event_ID'] = self.currentEntry
@@ -816,7 +812,7 @@ class Event:
         return [neutrontrkId, neutronKE]
 
     def cos_theta(self):
-        trig = self.selectneutronevent()
+        trig = self.SelectNeutronEvent()
         if trig != 1:
             return None
         reconstructed_direction = self.reconstructed_direction()
@@ -838,7 +834,7 @@ class Event:
         sampling from the exact same points as reconstructing_direction().
         """
         info = []
-        if self.selectneutronevent() != 1:
+        if self.SelectNeutronEvent() != 1:
             return info
 
         mm2cm = 0.1
@@ -923,7 +919,7 @@ class Event:
     # here we face a problem, in every track there are multiple points, in simulating_direction we just pick up a random one for simulation
     def reconstructing_direction(self, start=0, stop=-1):
         coordinate = []
-        trig = self.selectneutronevent()
+        trig = self.SelectNeutronEvent()
         #print("the trig is :", trig)
         mm2cm = 0.1
         if trig == 1:
@@ -1045,7 +1041,7 @@ class Event:
 
 
 
-    def selectneutronevent(self):
+    def SelectNeutronEvent(self):
         trig = 0
         for i in range(self.tracks.size):
             track = self.tracks[i]
@@ -1069,7 +1065,7 @@ class Event:
         #    print("this", self.currentEntry, "th event has one neutron neutrino interaction, it is a good event")
         #elif trig != 0 and trig != 1:
         #    print("this", self.currentEntry, "th event has", trig, "neutron neutrino interaction, it is a BAD event")
-        print(trig,"is trig")
+        #print(trig,"is trig")
         return trig
     # ----------------------
     def read_muon_direction(self):
@@ -1100,19 +1096,19 @@ class Event:
                 direction_vector.append(py / p_square)
                 direction_vector.append(pz / p_square)
                 direction_vector = np.array(direction_vector)
-            print("the direction of the muon:",direction_vector)
+            #print("the direction of the muon:",direction_vector)
             return direction_vector
         else:
-            print("the primary vertex does not have one muon coming out")
+            #print("the primary vertex does not have one muon coming out")
             return None
     def read_neutron_direction(self):
         direction_vector = []
-        trig = self.selectneutronevent()
+        trig = self.SelectNeutronEvent()
         if trig != 1:
         #    print("this event does not have one neutron neutrino interaction")
             return
         else:
-            print("this event has neutron neutrino interaction")
+            #print("this event has neutron neutrino interaction")
             i = 0
             track = self.tracks[i]
             parId = track.GetParentId()
@@ -1134,7 +1130,7 @@ class Event:
                 direction_vector.append(py / p_square)
                 direction_vector.append(pz / p_square)
                 direction_vector = np.array(direction_vector)
-        print("the direction of the neutron:",direction_vector)
+        #print("the direction of the neutron:",direction_vector)
 
         return direction_vector
 
@@ -1147,7 +1143,7 @@ class Event:
         #    print("this event does not have one neutron neutrino interaction")
             return
         else:
-            print("this event has muon neutrino interaction")
+            #print("this event has muon neutrino interaction")
             i = 0
             track = self.tracks[i]
             parId = track.GetParentId()
@@ -1169,11 +1165,37 @@ class Event:
                 direction_vector.append(py / p_square)
                 direction_vector.append(pz / p_square)
                 direction_vector = np.array(direction_vector)
-        print("the direction of the muon:",direction_vector)
+
+        #print("the direction of the muon:",direction_vector)
 
         return direction_vector
 
+    def read_muon_energy(self):
+        for i, particle in enumerate(self.vertex.Particles):
+            pdg = particle.GetPDGCode()
+            KE = 0
+            trkId = particle.GetTrackId()
+            if trkId < 0:
+                countnegId += 1
+                continue
+            if pdg in (-13,13):
+                mom = particle.GetMomentum()
+                KE = mom.E() - mom.M()
+            return KE
 
+    def read_neutron_energy(self):
+        for i, particle in enumerate(self.vertex.Particles):
+            pdg = particle.GetPDGCode()
+            KE = 0
+            trkId = particle.GetTrackId()
+
+            if trkId < 0:
+                countnegId += 1
+                continue
+            if pdg == 2112:
+                mom = particle.GetMomentum()
+                KE = mom.E() - mom.M()
+            return KE
 
 
     def selectmuonneutronevent(self,nevent):
